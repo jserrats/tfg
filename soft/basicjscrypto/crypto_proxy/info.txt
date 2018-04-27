@@ -1,0 +1,35 @@
+This exercice proposes the creation of a crypto proxy. To connect to a server we would usually create a raw tcp socket and send information through it. 
+
+information --> (local socket) ---> (remote socket) --> process information
+
+We are going to implement a TCP proxy that acts in between the sockets, and encrypts the information passed through it.
+
+information --> (local socket (netcat) ) --unencrypted--> (proxy + cipher) --encrypted--> (remote socket + decipher) --> process information
+
+For the first socket (local socket), we are going to use netcat. netcat allows to create a TCP socket easily from the CLI. In the real world, netcat would be much more complex program.
+
+The second socket will recieve the unencrypted data, cipher it using AES 256 and resend it to the server.
+
+Finally, the remote socket recieves the encrypted data, and deciphers it. In our implementation, the server saves the data into a file.
+
+To run the experiment:
+
+nodejs decrypt_server.js
+nodejs crypto_proxy.js
+nc localhost 1234
+
+If we use wireshark we can see that the first connection is in clear text, while the second isnt.
+
+For the next part, we are going to send a picture through the proxy. To do this, execute netcat with a pipe
+
+cat Tux.png | nc localhost 1234
+
+where Tux.png is the picture to send. If all goes well, we shall see a picture named test.png, that should be the same as Tux.png
+
+If we capture this traffic with wireshark, then select the option "Follow TCP Stream" on any tcp packet, and finally select "Save as..." we can capture files directly from wireshark. If we do this with the connection that isn't encrypted, we can save the picture, while if we do this in the connection that isn't, we are getting pseudonoise. This is a very powerful tool, as we can see and save any non-encrypted traffic that goes trough our computer (Now imagine you are the gateway in a public wifi).
+
+Excercise:
+Improve the proxy and the server so full duplex conection is possible.  
+
+
+

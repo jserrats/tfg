@@ -1,0 +1,14 @@
+{
+  "name": "basic_crypto",
+  "version": "1.0.0",
+  "description": "packages requiered for basic crypto",
+  "main": "rsa_demo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-rsa": "^0.4.2"
+  }
+}

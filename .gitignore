@@ -2,3 +2,5 @@ node_modules/
 misc/
 build/
 *.log
+*.xml
+.idea/

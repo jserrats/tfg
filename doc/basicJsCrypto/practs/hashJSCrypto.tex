@@ -1,0 +1,134 @@
+%Author:jaume,jose
+%Last:03/2018
+%Version:1.0
+%Comment: basic SHA256 with JS
+
+\begin{Exercise}[label={basic-js-crypto-sha256}]
+In this exercise you will practice with cryptographic hashes.
+
+\begin{enumerate}[1.]
+\item Write a script that prints the hash of a string using SHA265. 
+Use the \textit{crypto} module of the Node standard library.
+\item Modify the script so that it also prints 
+the hash of a slightly different string. 
+\item Compare the two results. 
+Do you think it's easy to find a collision? 
+How many possible hash digests are there in SHA256?
+	
+\end{enumerate}
+\end{Exercise}
+
+\begin{Answer}[ref={basic-js-crypto-sha256}]
+\begin{enumerate}[1.]
+\item The code is the following: 
+
+\begin{lstlisting}[style=JavaScript]
+// import the nodejs standard library "crypto"
+const crypto = require('crypto');
+
+
+function print_hash(message) {
+    console.log("\nMessage: " + message +
+        "\nHASH: " + 
+        crypto.createHash('sha256').update(message).digest('hex'))
+}
+
+print_hash("Bob owes me 100$");
+print_hash("Bob owes me 900$");
+
+console.log("\nThere are " + Math.pow(2, 256) 
++ " possible sha256 outputs. Collisions are possible but very unlikely");
+\end{lstlisting}
+\end{enumerate}
+\end{Answer}
+
+
+%Author:jaume,jose
+%Last:03/2018
+%Version:1.0
+%Comment: basic bcrypt with JS
+
+\begin{Exercise}[label={basic-js-crypto-bcrypt}]
+In this exercise you will practice with the bcrypt algorithm for hashing passwords.
+
+\begin{enumerate}[1.]
+\item Write a script that asks the user for a password, stores it in memory as a bcrypt, and then asks again for the password. The script has to compare both bcrypts and login the user. Use the \textit{bcrypt} library for Node.
+
+\begin{lstlisting}[style=JavaScript]
+bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
+// Store hash in your password DB.
+});
+
+bcrypt.compare(myPlaintextPassword, hash, function(err, res) {
+// res == true
+});
+
+bcrypt.compare(someOtherPlaintextPassword, hash, function(err, res) {
+// res == false
+});
+\end{lstlisting}
+
+Use this snippet for making easy password prompts:
+\begin{lstlisting}[style=JavaScript]
+function ask_something(to_ask) {
+	return new Promise((resolve) => {
+		rl.question(to_ask, (answer) => {
+			resolve(answer);
+		});
+	});
+}
+
+async function main() {
+	const password = await ask_something('Write a password to be saved: ');
+}
+\end{lstlisting}
+\end{enumerate}
+\end{Exercise}
+
+\begin{Answer}[ref={basic-js-crypto-bcrypt}]
+\begin{enumerate}[1.]
+\item The code is the following: 
+
+\begin{lstlisting}[style=JavaScript]
+const bcrypt = require('bcrypt');
+const readline = require('readline')
+const rl = readline.createInterface(process.stdin, process.stdout);
+
+stored_hash = '';
+
+function ask_something(to_ask) {
+    return new Promise((resolve) => {
+        rl.question(to_ask, (answer) => {
+            resolve(answer);
+        });
+    });
+}
+
+async function main() {
+
+    const password = await ask_something('Write a password to be saved: ');
+
+    bcrypt.hash(password, 10, function (err, hash) {
+        stored_hash = hash;
+    });
+
+    const new_password = await ask_something('Now write the password to login: ');
+
+    console.log("The bcrypt stored is: " + stored_hash);
+
+    bcrypt.compare(new_password, stored_hash, function (err, res) {
+
+        if (res) {
+            console.log("The passwords are the same, log in!")
+        } else {
+            console.log("The passwords are diferent")
+        }
+    });
+    rl.close();
+    process.stdin.destroy();
+}
+
+main();
+\end{lstlisting}
+\end{enumerate}
+\end{Answer}

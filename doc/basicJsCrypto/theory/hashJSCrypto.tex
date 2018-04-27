@@ -1,0 +1,20 @@
+\section{Hash function}
+A Hash function is used to map data of any size to a fixed size. The result of the function is called the hash. A cryptographic hash function also has the property of making very difficult to obtain the original o an equivalent input of the function knowing the hash result.
+
+It is important to understand that given an unlimited size of input data and a fixed size to output hash, collisions are existent. A good cryptographic hash function makes it deliberately difficult to find collisions.
+
+One of the uses of a hash function in security is to verify the integrity of data. If we hash a data, then send this data with the hash result, the receiving end can hash again the data and compare to the original hash. If they are the same, it means that the message has not been altered by error or maliciously.
+
+\subsection{Digital signature}
+If we use the hash properties in conjunction of the authentication of the Asymmetric encryption, we can design a \textbf{digital signature}. The goal of a digital signature is to authenticate (Verify that the sender is who he says), integrity (the message has not been modified in any way) and non-repudiation (the sender can't deny the ownership of the message).
+
+To do this first we need the message to sign. Then we hash it and encrypt the result with our private key. The result is sent with the original message. If someone wants to verify the message, then he has to decrypt the signature with the public key, then compare the result with the hash the message. If they match, the message has not been altered, and is authenticated.
+ 
+\subsection{Bcrypt}
+A very interesting use of the hash function is storing passwords safely. If we store a password in clear, when a cracker gets access to the DB instantly gets all the credentials of all the users. The first thought may be to encrypt the DB to protect it, but that is next to useless. If the server has to have access to the DB, the key has to be stored in it, so the cracker can get access easily too.
+
+The next security step is to hash the passwords, and store the hash result. This way when the user tries to log in, the server calculates the hash of the password and compares to result to what is stored. If the DB falls in wrong hands, it's only gonna be a list of apparently random data. This is a more secure approach, but it's not perfect. A cracker can have a pre-calculated table of the more usual passwords hashed (also called a \textit{rainbow table}), and find matches. This way some passwords can be discovered even if the DB is hashed.
+
+The solution to this is to implement a \textbf{salt.} A salt is a piece of data that is generated randomly and is stored in clear next to the the hash. When a password \textit{p} is entered by the user, the server grabs the salt and calculates \textit{Hash(p+salt)} If the result matches with what is stored, the password is correct. This makes precalculating the most common passwords useless, because the attacker has to calculate each entry individually with the given salt.
+
+Bcrypt is a hash algorithm that is designed for password storage and implements the salt method.

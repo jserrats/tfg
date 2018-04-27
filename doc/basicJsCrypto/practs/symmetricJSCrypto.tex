@@ -1,0 +1,52 @@
+%Author:jaume,jose
+%Last:03/2018
+%Version:1.0
+%Comment: basic AES with JS
+
+\begin{Exercise}[label={basic-js-crypto-aes}]
+In this exercise you will practice with symmetric encryption.
+
+\begin{enumerate}[1.]
+\item Write a simple script that encrypts and decrypts a string using ECB.
+In your script, prints to the screen the whole process. 
+The password and the string to be encrypted can be hard coded.
+\end{enumerate}
+
+\end{Exercise}
+
+\begin{Answer}[ref={basic-js-crypto-aes}]
+\begin{enumerate}[1.]
+\item The code is the following: 
+
+\begin{lstlisting}[style=JavaScript]
+var crypto = require('crypto');
+password = 'asdfe';
+
+//https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation
+
+function encrypt(text) {
+    var cipher = crypto.createCipher('aes-256-ecb', password);
+    var crypted = cipher.update(text, 'utf8', 'hex');
+    crypted += cipher.final('hex');
+
+    return crypted;
+}
+
+function decrypt(text) {
+    var decipher = crypto.createDecipher('aes-256-ecb', password);
+    var dec = decipher.update(text, 'hex', 'utf8');
+    dec += decipher.final('utf8');
+    return dec;
+}
+
+message = "01234567890123456789012345678901234567890123456";
+var hw = encrypt(message);
+split = hw.toString().length / 2;
+console.log("Message is " + message.length + " bytes long. " +
+    "Encrypted is " + hw.toString().length + " chars or " + hw.length /2 + "bytes");
+console.log(hw, "\n" + hw.substr(0, split), "\n" + hw.substr(split));
+console.log(decrypt(hw));
+\end{lstlisting}
+
+\end{enumerate}
+\end{Answer}

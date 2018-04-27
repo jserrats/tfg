@@ -1,0 +1,343 @@
+\section{Processes}
+\subsection{Introduction}
+\begin{frame}[fragile]\frametitle{Booting}
+\begin{itemize}
+\item To boot (start) a Linux system, a sequence is followed in which 
+the control first goes to the BIOS, then to a boot loader 
+and finally, to a Linux kernel (the system core).
+\begin{figure}
+\includegraphics [width=0.85\textwidth]{\linuxdir/processes/figures/boot-process}
+\end{figure}
+\item When kernel starts, it executes \textit{init}, the first process. 
+\item The kernel implements a ''scheduler`` to share the CPU.
+\item Linux processes have ''kinship`` (parent, child etc.). 
+\item The root of the ''tree of processes`` is \textit{init}. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Listing processes}
+\begin{itemize}
+\item The command \verb|ps| provides information about the processes running on the system.
+
+\begin{lstlisting}
+$ ps
+  PID TTY          TIME CMD
+21380 pts/3    00:00:00 bash
+21426 pts/3    00:00:00 ps
+\end{lstlisting}
+
+\item We see that two processes \verb|bash| (shell) and \verb|ps| (command). 
+\item The PID is the process identifier.
+\end{itemize}
+\begin{figure}
+\includegraphics [width=0.85\textwidth]{\linuxdir/processes/figures/te-processes}
+\end{figure}   
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Command \texttt{ps}}
+\begin{itemize}
+\item \texttt{\textbf{ps}}  supports many parameters. 
+\item Some of them are (type \texttt{man ps}):
+  \begin{itemize}
+  \scriptsize
+  \item \textit{\textbf{-A}} shows all the processes from all the users. \\
+  \item \textit{\textbf{-u user}} shows proccesses of a particular user. \\
+  \item \textit{\textbf{-f}} shows extended information. \\
+  \item \textit{\textbf{-o format}} format may be included in a list separated by commas
+  the columns of information you want displayed (use the command \texttt{man}
+  for a complete list of possible columns). 
+  \item Examples: 
+  \end{itemize}
+
+\scriptsize
+\begin{lstlisting}
+$ ps -Ao  pid,ppid,state,tname,%cpu,%mem,time,cmd
+$ ps -u user1 -o pid,ppid,cmd
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Manual}
+\begin{itemize}
+ \item The \verb|man| command shows the ``manual'' of other commands. 
+\begin{lstlisting}
+$ man ps
+\end{lstlisting}
+\item Manual for the command ``\texttt{ps}''. 
+\item Use arrow keys or \texttt{AvPag}/\texttt{RePaq} to go up and down. 
+\item To search for text \textit{xxx} 
+  \begin{itemize}
+  \item You can type \texttt{/xxx}. 
+  \item To go to the next and previous matches you can press keys
+  \texttt{n} and \texttt{p} respectively. 
+  \end{itemize}
+\item You can use \texttt{q} to exit the manual.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Working with the terminal}
+\begin{itemize}
+\item \textbf{History:}
+  \begin{itemize}
+  \item You can also press the up/down arrow to scroll back 
+  and forth through your command history.
+  \item The history can be seen with the command \texttt{history} 
+  and you can retype a command with \texttt{!number}.
+  \end{itemize}
+\item \textbf{Completition:} 
+  \begin{itemize}
+  \item When pressing the \texttt{TAB}, bash automatically fills 
+  in partially typed commands or parameters.
+  \item Example: type h+TAB, h+TAB+TAB, hi+TAB+TAB, etc.
+  \end{itemize}
+\item \textbf{Copy and Paste:} 
+  \begin{enumerate}
+  \item Select text and press the mouse's middle button (or scroll wheel) to paste.
+  \item The combinations \texttt{CRL+SHIFT+c} and \texttt{CRL+SHIFT+v} also usually work.
+  \end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Other commands related to processes}
+\begin{itemize}
+\item \texttt{\textbf{pstree}} displays all system processes tree.
+\item \texttt{\textbf{top}} returns a list of processes with information 
+updated periodically. 
+\item \texttt{\textbf{time}} gives us the duration of execution 
+of a particular command.
+  \begin{itemize}
+  \item Real refers to actual elapsed time. 
+  \item User and Sys refer to CPU time used only by the process.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\subsection {Scripts}
+
+\begin{frame}[fragile]\frametitle{Script vs. Program}
+\begin{columns}
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+\item \textbf{Programs:}
+  \begin{itemize}
+  \item The source of a program is first compiled, and the result 
+  of that compilation is executed.
+  \end{itemize}
+\end{itemize}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{figure}
+\includegraphics [width=1\textwidth]{\linuxdir/processes/figures/program-script}
+\end{figure}
+\end{column}
+\end{columns}
+\begin{itemize}
+\small
+\item Examples of languages to build programs: C, C++, etc.
+\end{itemize}
+
+\vspace{-0.2cm}
+\begin{itemize} 
+\item \textbf{Scripts:}
+  \begin{itemize}
+  \item A script is interpreted. It is written to be understood by an interpreter.
+  \item Scripting examples: Bash scripts, Python, PHP, Javascript, etc.
+  \item Typically scripts are written for small applications and they are easier to develop.
+  \item However, scripts are also usually slower than programs due to the interpretation process.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,allowframebreaks]\frametitle{Shell Scripts}
+\begin{itemize}
+\item A shell script is a text file containing commands and special 
+internal shell commands (if,for, while, etc.).
+\item The script is interpreted and executed by the shell (bash in most Linux systems). 
+\item The simplest example is:
+\begin{lstlisting}[style=scriptStyle]
+pstree
+sleep 2
+ps
+\end{lstlisting}
+
+\item To run a script you must give it execution permissions: 
+\begin{lstlisting}
+$ chmod u+x myscript.sh 
+\end{lstlisting}
+\item To execute it use: 
+\begin{lstlisting}
+$ ./myscript.sh
+\end{lstlisting}
+\framebreak
+\item Another example script is the typical ``Hello world'': 
+\begin{lstlisting}[style=scriptStyle]
+#!/bin/bash
+# Our second script, Hello world!
+echo Hello world
+\end{lstlisting}
+\item The script begins with ``\#!'' which contains the path to the shell that will execute the script.
+\item The lines starting with \# are comments.
+\item To write to the terminal we can use the \texttt{echo} command.
+\item To read you can use the \texttt{read} command.
+\begin{lstlisting}[style=scriptStyle]
+#!/bin/bash
+# Our third script, using read for fun
+echo Please, type a sentence and hit ENTER
+read TEXT
+echo You typed: $TEXT
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+
+\subsection {Fore/Background}
+
+\begin{frame}[fragile]\frametitle{Foreground and Background}
+\begin{itemize}
+\item By default, the bash executes commands interactively or \textbf{foreground}.
+\item The shell waits until the end of a command before executing another one.
+\begin{lstlisting}
+$ xeyes
+\end{lstlisting}
+\item With the ampersand symbol (\&), you can execute commands non-interactively or in \textbf{background}.
+\begin{lstlisting}
+$ xeyes &
+\end{lstlisting}
+\item In foreground or background the output goes to the corresponding terminal.
+\item You cannot use input from the terminal while in background.
+\end{itemize}
+\end{frame}
+
+\subsection {Signals}
+\begin{frame}[fragile,allowframebreaks]\frametitle{Signals}
+\begin{itemize}
+\item A signal is a limited form of inter-process communication: signals are INTEGERS.
+\item Some signals are destined to the kernel (non-capturable) and others to processes running in user space (capturable).
+\begin{figure}
+\begin{centering}
+\includegraphics [width=0.7\textwidth]{\linuxdir/processes/figures/kill-syscall}
+\par\end{centering}
+\end{figure}
+\item When the signal is for a process it can be understood as an asynchronous notification.
+\framebreak
+\item When the process receives the signal it interrupts its normal flow of execution and
+it executes the corresponding signal handler (function).
+\item In Linux, the most widely used signals and their corresponding integers are:
+  \begin{itemize}
+  \item 9 \verb|SIGKILL|. Non-capturable signal sent to the kernel to end a process immediately.
+  \item 20 \verb|SIGSTOP|. Non-capturable signal sent to the kernel to stop a process. This signal can be 
+  generated in a terminal for a process in foreground pressing \textbf{\texttt{Control-Z}}.
+  \item 18 \verb|SIGCONT|. Non-capturable signal sent to the kernel that resumes a previously stopped process. This 
+  signal can be generated typing \texttt{bg} in a terminal.
+  \framebreak
+  \item 2 \verb|SIGINT|. Capturable signal sent to a process to tell it that it must terminate its execution. 
+  It is sent in an interactive terminal for the process in foreground when the user presses \textbf{\texttt{Control-C}}.
+  \item 15 \verb|SIGTERM|. Capturable signal sent to a process to ask for termination. It is sent from the GUI and 
+  also this is the default signal sent by the \texttt{kill} command.
+  \item \verb|USR1|. Capturable signal that can be used for any desired purpose.
+  \end{itemize}
+\item Syntax of \verb|kill| command: \textbf{\texttt{kill -signal PID}}. 
+\begin{lstlisting}
+$ kill -9 30497
+$ kill -SIGKILL 30497 
+\end{lstlisting}
+\item As you can observe, you can use both the number and the name of the signal.
+\end{itemize}
+\end{frame}
+
+% Lanzar un proceso en foreground y usar stop/cont para ponerlo en background.
+% Por lo complejo de la operación justificamos el Job Control.
+
+\begin{frame}[fragile,allowframebreaks]\frametitle{Job Control}
+\begin{itemize}
+\item \textit{Job control} refers to the bash feature of managing processes as jobs.
+\item We use \textbf{\texttt{``jobs''}}, \textbf{\texttt{``fg''}},  \textbf{\texttt{``bg''}} 
+and the hot keys \textbf{\texttt{Control-z}} and \textbf{\texttt{Control-c}}.
+\item \texttt{jobs} displays a list of processes launched from a specific instance of bash. 
+\item Each job is assigned an identifier called a JID (Job Identifier).
+\item \textbf{Control-z} sends a stop signal (SIGSTOP) to the process that is running on \textit{foreground}. 
+\item To resume the process that we just stopped, type the command \texttt{bg}.
+\item Typping the JID after the command \texttt{bg} will send the process identified by it to \textit{background}. 
+\item The JID can also be used with the command \texttt{kill} using \%.
+\item Another very common shortcut is \textbf{Control-c} and it is used to send a
+signal to terminate (SIGINT) the process that is running on
+\textit{foreground}. 
+\item Whenever a new process is run in \textit{background}, the bash provides us
+the JID and the PID:
+\begin{lstlisting}
+$ xeyes &
+[1] 25647 
+\end{lstlisting}
+\item Here, the job has JID=1 and PID=25647.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{\texttt{trap}}
+\begin{itemize}
+\item \texttt{trap} allows capturing and processing signals in scripts.
+\item Example, if we use this script:
+
+\begin{lstlisting}[style=scriptStyle]
+trap "echo I do not want to finish!!!!" SIGINT
+while true
+do
+sleep 1
+done
+\end{lstlisting}
+\item Try to press \texttt{\textbf{Control-z}}.
+\end{itemize}
+\end{frame}
+
+\ifEXTRA
+\begin{frame}[fragile]\frametitle{\texttt{*nice}}
+\begin{itemize}
+\item Each Unix process has a priority level ranging from -20 (highest priority) 
+to 19 (lowest priority).
+\item A low priority means that the process will run more slowly or that the process 
+will receive less CPU cycles from the kernel scheduler. 
+\item The \verb|top| command can be used to easily change the priority of running processes.
+\item Only the superuser ''root`` can assign negative priority values.
+\item You can also use \texttt{nice} and \texttt{renice} instead of \texttt{top}. 
+Examples.
+\begin{lstlisting}
+$ nice -n 2 xeyes &
+[1] 30497
+$ nice -n -2 xeyes
+nice: cannot set niceness: Permission denied
+$ renice -n 8 30497
+30497: old priority 2, new priority 8
+\end{lstlisting}
+\end{itemize}
+\end{frame}
+\fi
+
+
+\subsection{Multiple commands}
+
+\begin{frame}[fragile,allowframebreaks]\frametitle{Running multiple commands}
+\begin{itemize}
+\item The commands can be run in some different ways. 
+\item In general, the command returns 0 if
+successfully executed and positive values (usually 1) if an error occurred.
+\item To see the exit status type \texttt{echo \$?}. 
+\item Try:
+
+\begin{lstlisting}
+$ ps -k
+$ echo $?
+$ ps 
+$ echo $?
+\end{lstlisting}
+
+\framebreak
+\item There are also different ways of executing commands:
+  \begin{itemize}
+  \item \textbf{\texttt{\$~command~}} the command runs in the foreground. 
+  \item \textbf{\texttt{\$~command1~\&~command2~\&~...~commandN~\&}} commands will run in background.
+  \item \textbf{\texttt{\$~command1;~command2~... ;~commandN}} sequential execution.
+  \item \textbf{\texttt{\$~command1~\&\&~command2~\&\&~...~\&\&~commandN}} \texttt{commandX} is executed
+  if the last executed command has exit successfully (return code 0).
+  \item \textbf{\texttt{\$~command1~||~command2~||~...~||~commandN}} \texttt{commandX} is executed
+  if the last executed command has NOT exit successfully (return code >0).
+  \end{itemize}
+\end{itemize}
+\end{frame}

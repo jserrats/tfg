@@ -1,0 +1,62 @@
+\section{Authenticator}
+A authenticator is a software that generates a token that is used with a password when logging in. One possible implementation is generated the token with a seed that is set when created, and a time variable. When we need a token, we concatenate the seed with the timestamp, and then hash it. The first N chars of the hash result are the authenticator token. The server knows the seed, and can generate the same token using the same process. The server is sure that only somebody that knows the seed can generate a valid token.
+
+\subsection{Exercises}
+\begin{enumerate}
+	\item Write a little program that every second in the UNIX time that ends with 0 prints the token with a given seed. You can use the \textbf{setInterval()} function. Use a SHA256 like in the hash exercise. You can get the UNIX time the following way:
+	\begin{lstlisting}[style=JavaScript]
+	timestamp = Math.round((new Date()).getTime() / 1000);
+	\end{lstlisting}
+	\item Write a program that has a bare socket server. 
+	If the server receives a valid token, responds "ok!" 
+\end{enumerate}
+
+\begin{lstlisting}[style=JavaScript]
+// authenticator.js
+const crypto = require('crypto');
+
+function print_auth() {
+    let timestamp = Math.round((new Date()).getTime() / 1000);
+    if ((timestamp % 30) === 0) {
+        let auth = crypto.createHash('sha256').update(timestamp + seed).digest('hex').substr(0, 6);
+        console.log(auth);
+    }
+}
+
+seed = "prova";
+setInterval(print_auth, 1000);
+\end{lstlisting}
+
+
+\begin{lstlisting}[style=JavaScript]
+// authenticator_server.js
+
+const net = require('net');
+const crypto = require('crypto');
+
+last_timestamp = 0;
+seed = "prova";
+
+net.createServer(function (sock) {
+    console.log('New destination');
+    sock.on('data', function (data) {
+        data = data.toString().substr(0, data.length - 1);
+        if (crypto.createHash('sha256').update(last_timestamp + seed).digest('hex').substr(0, 6) === data) {
+            sock.write('Authentication correct!\n');
+        }
+        else {
+            sock.write('Wrong!\n');
+        }
+    });
+    sock.on('close', function (data) {
+        console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort);
+    });
+}).listen(1234);
+
+setInterval(function () {
+    let timestamp = Math.round((new Date()).getTime() / 1000);
+    if ((timestamp % 30) === 0) {
+        last_timestamp = timestamp;
+    }
+}, 1000);
+\end{lstlisting}

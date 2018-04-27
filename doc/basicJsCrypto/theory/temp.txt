@@ -1,0 +1,196 @@
+\section{Asymmetric Encryption}
+
+In a Asymmetric encryption algorithm, there are a pair of keys. A public key that is available to everyone and therefore is \textbf{not a secret}, and a private key, that is only known to one user. The message encrypted with the public key only can be read with the private key, and with only the public key, it is impossible to know the private key. This allows us to create a system where everyone can send messages securely to a entity, but only the one with the private key can know its content.
+This can work the other way around. The owner of the private key can cipher a message with it and send it to everyone. Then all the receivers can decipher the message with the public key. This may seem useless because everyone has the public key and is able to read the message. The interesting part is that only somebody that has the public key can create a message that can be read using the public key, so this way the message can be authenticated. This property in combination with the hash function, is very used in authentications and digital signatures.
+
+Is worth mentioning that public key cryptography is generally more computationally expensive than symmetric cryptography. Usually the protocols use public key cryptography to authenticate and to exchange symmetric keys, then the rest of the communication is done using symmetric cryptography.
+ 
+\begin{figure}[htb]
+	\begin{centering}
+		\includegraphics[width=0.7\columnwidth]{\securitydir/basicJsCrypto/figures/rsa}
+		\par\end{centering}
+	\caption{\label{fig:rsa} RSA can be used both ways}
+\end{figure}
+
+
+\subsection{Exercises}
+\begin{enumerate}
+	\item Generate a key pair using openssl. When finished, we will have two files, one with the public key and the other with the private.
+	\begin{lstlisting}
+	$ openssl genrsa -out key.priv 2048 && openssl rsa -in key.priv -pubout -out key.pub
+	\end{lstlisting}
+	
+	\item Write a simple script that loads the keys from the files and encrypts and decrypts a string using RSA using the library \textit{node-rsa.}Use the following snippets as a guide:
+	\begin{lstlisting}[style=JavaScript]
+	file_content = fs.readFileSync('file.txt');
+	
+	private_key = new NodeRSA(" PEM formatted key ");
+	
+	encrypted_data = public_key.encrypt(data, 'base64');
+	
+	private_key.decrypt(data, 'utf8');
+	\end{lstlisting}
+	\item Now use the signing capability of RSA. Use the sign and verify methods:
+	\begin{lstlisting}[style=JavaScript]
+		key.sign(buffer, [encoding], [source_encoding]);
+		
+		key.verify(buffer, signature, [source_encoding], [signature_encoding])
+		\end{lstlisting}
+	
+\end{enumerate}
+
+
+\section{Hash function}
+A Hash function is used to map data of any size to a fixed size. The result of the function is called the hash. A cryptographic hash function also has the property of making very difficult to obtain the original o an equivalent input of the function knowing the hash result.
+
+It is important to understand that given an unlimited size of input data and a fixed size to output hash, collisions are existent. A good cryptographic hash function makes it deliberately difficult to find collisions.
+
+One of the uses of a hash function in security is to verify the integrity of data. If we hash a data, then send this data with the hash result, the receiving end can hash again the data and compare to the original hash. If they are the same, it means that the message has not been altered by error or maliciously.
+
+\subsection{Digital signature}
+If we use the hash properties in conjunction of the authentication of the Asymmetric encryption, we can design a \textbf{digital signature}. The goal of a digital signature is to authenticate (Verify that the sender is who he says), integrity (the message has not been modified in any way) and non-repudiation (the sender can't deny the ownership of the message).
+
+To do this first we need the message to sign. Then we hash it and encrypt the result with our private key. The result is sent with the original message. If someone wants to verify the message, then he has to decrypt the signature with the public key, then compare the result with the hash the message. If they match, the message has not been altered, and is authenticated.
+
+\subsection{Exercises}
+\begin{enumerate}
+	\item Write a script that prints the hash of a string using SHA265. Use the \textit{crypto} module of the Node standard library.
+	\item Modify the script so that it also prints the hash of a slightly different string. 
+	\item Compare the two results. Do you think it's easy to find a collision? How many possible hash digests are there in SHA256?
+\end{enumerate}
+ 
+ 
+\section{Bcrypt}
+A very interesting use of the hash function is storing passwords safely. If we store a password in clear, when a cracker gets access to the DB instantly gets all the credentials of all the users. The first thought may be to encrypt the DB to protect it, but that is next to useless. If the server has to have access to the DB, the key has to be stored in it, so the cracker can get access easily too.
+
+The next security step is to hash the passwords, and store the hash result. This way when the user tries to log in, the server calculates the hash of the password and compares to result to what is stored. If the DB falls in wrong hands, it's only gonna be a list of apparently random data. This is a more secure approach, but it's not perfect. A cracker can have a pre-calculated table of the more usual passwords hashed (also called a \textit{rainbow table}), and find matches. This way some passwords can be discovered even if the DB is hashed.
+
+The solution to this is to implement a \textbf{salt.} A salt is a piece of data that is generated randomly and is stored in clear next to the the hash. When a password \textit{p} is entered by the user, the server grabs the salt and calculates \textit{Hash(p+salt)} If the result matches with what is stored, the password is correct. This makes precalculating the most common passwords useless, because the attacker has to calculate each entry individually with the given salt.
+
+Bcrypt is a hash algorithm that is designed for password storage and implements the salt method.
+
+\subsection{Exercises}
+\begin{enumerate}
+	\item Write a script that asks the user for a password, stores it in memory as a bcrypt, and then asks again for the password. The script has to compare both bcrypts and login the user. Use the \textit{bcrypt} library for Node.
+	
+		\begin{lstlisting}[style=JavaScript]
+		bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
+			// Store hash in your password DB.
+		});
+		
+		bcrypt.compare(myPlaintextPassword, hash, function(err, res) {
+		// res == true
+		});
+		
+		bcrypt.compare(someOtherPlaintextPassword, hash, function(err, res) {
+		// res == false
+		});
+		\end{lstlisting}
+		
+		Use this snippet for making easy password prompts:
+			\begin{lstlisting}[style=JavaScript]
+			function ask_something(to_ask) {
+				return new Promise((resolve) => {
+					rl.question(to_ask, (answer) => {
+						resolve(answer);
+					});
+				});
+			}
+			
+			async function main() {
+				const password = await ask_something('Write a password to be saved: ');
+			}
+			\end{lstlisting}
+\end{enumerate}
+
+\section{Authenticator}
+A authenticator is a software that generates a token that is used with a password when logging in. One possible implementation is generated the token with a seed that is set when created, and a time variable. When we need a token, we concatenate the seed with the timestamp, and then hash it. The first N chars of the hash result are the authenticator token. The server knows the seed, and can generate the same token using the same process. The server is sure that only somebody that knows the seed can generate a valid token.
+
+\subsection{Exercises}
+\begin{enumerate}
+	\item Write a little program that every second in the UNIX time that ends with 0 prints the token with a given seed. You can use the \textbf{setInterval()} function. Use a SHA256 like in the hash exercise. You can get the UNIX time the following way:
+	\begin{lstlisting}[style=JavaScript]
+	timestamp = Math.round((new Date()).getTime() / 1000);
+	\end{lstlisting}
+	\item Write a program that has a bare socket server. If the server receives a valid token, responds "ok!" 
+\end{enumerate}
+
+
+\section{Project 1 - Crypto Proxy}
+This exercice proposes the creation of a crypto proxy. To connect to a server we would usually create a raw tcp socket and send information through it. 
+
+We are going to implement a TCP proxy that acts in between the sockets, and encrypts the information passed through it.
+
+\begin{figure}[htb]
+	\begin{centering}
+		\includegraphics[width=0.7\columnwidth]{\securitydir/basicJsCrypto/figures/crypto_proxy}
+		\par\end{centering}
+	\caption{\label{fig:crypto_proxy} Connexion scheme}
+\end{figure}
+
+
+For the first socket (local socket), we are going to use netcat. netcat allows to create a TCP socket easily from the CLI. In the real world, netcat would be much more complex program.
+
+The second socket will recieve the unencrypted data, cipher it using AES 256 and resend it to the server.
+
+Finally, the remote socket recieves the encrypted data, and deciphers it. In our implementation, the server saves the data into a file.
+
+To run the experiment we are going to need three different terminals.
+
+\begin{lstlisting}
+$ nodejs decrypt_server.js
+$ nodejs crypto_proxy.js
+$ nc localhost 1234
+\end{lstlisting}
+
+
+If we use wireshark we can see that the first connection is in clear text, while the second isnt.
+
+For the next part, we are going to send a picture through the proxy. To do this, execute netcat with a pipe where Tux.png is the picture to send.
+
+\begin{lstlisting}
+$ cat Tux.png | nc localhost 1234
+\end{lstlisting}
+
+If all goes well, we shall see a picture named test.png, that should be the same as Tux.png
+
+If we capture this traffic with wireshark, then select the option "Follow TCP Stream" on any tcp packet, and finally select "Save as..." we can capture files directly from wireshark. If we do this with the connection that isn't encrypted, we can save the picture, while if we do this in the connection that isn't, we are getting pseudonoise. This is a very powerful tool, as we can see and save any non-encrypted traffic that goes trough our computer (Now imagine you are the gateway in a public wifi).
+
+\subsection{Exercises}
+\begin{enumerate}
+	\item Write the decrypt server. It must receive the data from the socket, pipe it through a AES decipher and then save it to a file.
+	
+	\item Write the proxy server. It should have two different sockets. One that works as a server en receives the data from the netcat, and the other must be a client that connects to the decrypt\_server. The data received from the netcat should be encrypted and then sent to the decrypt server.
+	
+	\item Improve the proxy and the server so full duplex encrypted conection is possible.
+\end{enumerate}
+
+ 
+
+\section{Project 2 - Crypto socket with authentication}
+
+In this exercise we are implementing all we've seen until now. We are going to implement a socket that uses both symmetric and asymmetric cryptography. Once the key exchange is done and the connection is fully encrypted, then we're gonna do a user and password login, with a authenticator token.
+
+\begin{figure}[htb]
+	\begin{centering}
+		\includegraphics[width=0.7\columnwidth]{\securitydir/basicJsCrypto/figures/authenticated_socket}
+		\par\end{centering}
+	\caption{\label{fig:authenticated_socket} Connexion scheme}
+\end{figure}
+
+
+\subsection{Exercises}
+This software is going to have three parts: client, server and authenticator. The authenticator can be recycled from the previous exercise. 
+\begin{enumerate}
+	\item First of all design the key exchange. The server should be listening for connections, and on connection send it's public key to the client. The client saves this key, and sends the symmetric key that is going to be used, encrypted with the server's public key, so eavesdropper's can't see it. From this point, both parties have the symmetric key, and all data exchange is gonna be encrypted with this key.
+	
+	\item Once the private connection is established, develop a login system. The easiest way is to achieve this is to make the client prompt the user with the user, password and authenticator token. Then the client serializes the answer in a JSON object, sends it to the server, and the server deserializes and reads the information. Server must generate a pseudo - DB at startup with a entry for every user that contains their password stored with a bcrypt hash and the seed for the user's authenticator.
+	
+	Beware that AES won't send the JSON unless it's larger than the block size, so to be sure we'll add a padding consistent of empty spaces.
+	
+	\begin{lstlisting}[style=JavaScript]
+	cipher.write(serialized + " ".repeat(128 - serialized.length));
+	\end{lstlisting}
+\end{enumerate}
+
+

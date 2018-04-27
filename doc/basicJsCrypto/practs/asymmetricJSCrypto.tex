@@ -1,0 +1,65 @@
+%Author:jaume,jose
+%Last:03/2018
+%Version:1.0
+%Comment: basic RSA with JS
+
+\begin{Exercise}[label={basic-js-crypto-rsa}]
+In this exercise you will practice with asymmetric encryption.
+First, generate a key pair using openssl:
+
+\begin{lstlisting}
+$ openssl genrsa -out key.priv 2048 && openssl rsa -in key.priv -pubout -out key.pub
+\end{lstlisting}
+
+When finished, we will have two files, 
+one with the public key and the other one with the private.
+
+\begin{enumerate}[1.]
+	
+\item Write a simple script that loads the keys from the files 
+and encrypts and decrypts a string using RSA using 
+the library \textit{node-rsa.}
+Use the following snippets as a guide:
+\begin{lstlisting}[style=JavaScript]
+file_content = fs.readFileSync('file.txt');
+
+private_key = new NodeRSA(" PEM formatted key ");
+
+encrypted_data = public_key.encrypt(data, 'base64');
+
+private_key.decrypt(data, 'utf8');
+\end{lstlisting}
+\item Now use the signing capability of RSA. Use the sign and verify methods:
+\begin{lstlisting}[style=JavaScript]
+key.sign(buffer, [encoding], [source_encoding]);
+
+key.verify(buffer, signature, [source_encoding], [signature_encoding])
+\end{lstlisting}
+	
+\end{enumerate}
+\end{Exercise}
+
+\begin{Answer}[ref={basic-js-crypto-rsa}]
+\begin{enumerate}[1.]
+\item The code is the following: 
+
+\begin{lstlisting}[style=JavaScript]
+// openssl genrsa -out certs/server/my-server.key.pem 2048
+// openssl rsa -in certs/source/my-source.key.pem -pubout -out certs/destination/my-source.pub
+var fs = require('fs');
+const NodeRSA = require('node-rsa');
+
+private_key = new NodeRSA(fs.readFileSync('key.priv'));
+public_key = new NodeRSA(fs.readFileSync('key.pub'));
+
+
+data = "testaedaedaedae";
+
+console.log(private_key.decrypt(public_key.encrypt(data, 'base64'), 'utf8'));
+
+signed = private_key.sign(data, 'base64');
+
+console.log(public_key.verify(data, signed, 'utf8', 'base64'));
+\end{lstlisting}
+\end{enumerate}
+\end{Answer}

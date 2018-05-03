@@ -1,0 +1,12 @@
+<html>
+<head>
+</head>
+<body>
+Hello!
+<script>
+    var pos = document.URL.indexOf("name=") + 5;  //finds the position of value
+    var userInput = document.URL.substring(pos, document.URL.length); //copy the value into userInput variable
+    document.write(unescape(userInput)); //writes content to the webpage
+</script>
+</body>
+</html>

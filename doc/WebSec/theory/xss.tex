@@ -47,7 +47,12 @@ JavaScript can interact with a lot of parts of the browser, and this makes XSS e
 \end{itemize}
 
 \subsection{XSS Prevention}
-Before explaining the actual prevention methods, it's important to know the factors that affect how each vulnerability is protected.
+To prevent a XSS, the most useful tool is to secure all the input received from the user. This can be done in two ways.
+\begin{itemize}
+	\item\textbf{Encoding} Escapes the inputs so the browser does not interpret it as code
+	\item\textbf{Validation} Detects and removes the malicious code from the inputs
+\end{itemize}
+Before going deeper in this methods, it's important to know the factors that affect how each vulnerability is protected.
 \begin{itemize}
 	\item \textbf{Context:} Secure input handling needs to be performed differently depending on where in a page the user input is inserted.
 	\item \textbf{Inbound/outbound:} Secure input handling can be performed either when your website receives the input (inbound) or right before your website inserts the input into a page (outbound).
@@ -73,9 +78,71 @@ In every web application there are many places where malicious js can be inserte
 	\end{tabular}
 \end{table}
 
-For example, if we had a HTML element input  and we want to break context, we could insert something like \verb|</div><script>...</script><div>| so the resulting HTML would be valid (\verb|<div></div><script>...</script><div></div>|). The closing division tag lets us insert whatever we want inside, so the obvious thing to do in order to protect the input would be to ban them. In another case \verb|<input value="userInput">|, that would not work because the browser will parse everything that gets between quotes as a text. In this case, the approach to attacking is closing the value field, and then insert the payload (\verb|"><script>...</script><input value="|).
+For example, if we had a HTML element input  and we want to break context, we could insert something like \verb|</div><script>...</script><div>| so the resulting HTML would be valid (\verb|<div></div><script>...</script><div></div>|). The closing division tag lets us insert whatever we want inside, so the obvious thing to do in order to protect the input would be to ban them. In another case \verb|<input value="userInput">|, that would not work because the browser will parse everything that gets between quotes as a text. In this case, the approach to attacking is closing the value field, and then insert the payload (\verb|"><script>...</script><input value="|). It's important to know in wich context we are so it is correctly protected.
 
-There are two fundamental ways to prevent XSS in an web app. These are not mutually exclusive and both have to be used to achieve maximum security
-\subsubsection{}
+\subsubsection{Inbound/Outbound}
+The input sanitation can be done when the data arrives at the application, or when it is sent to the browser. As we've seen, depending on the input context the validation and/or encoding has to be done differently. When the input arrives at the application we don't know in which context is going to be inserted, so protections can't be applied efficiently.
+
+\subsubsection{Encoding}
+Encoding consists of escaping the input received so the browser does not interpret it as code to be executed. In a HTML environment typically we will encode the characters \textbf{<, >} into \textbf{\&lt; and \&gt;}. If we tried to insert a code like \verb|<script> ... </script>| it would become \verb|&lt;script&gt;...&lt;/script&gt;| thus rendering it inofensive. When the browser finds this translates the encoded characters and then displays them, but without executing it.
+
+Encoding can be done on the back-end by using the methods of the chosen programing language. In the front-end we will be using js and it's built-in methods to encode properly in each context.
+
+\begin{table}[]
+	\centering
+	\caption{Inpuy contexts in a web application}
+	\label{my-label}
+	\begin{tabular}{|l|l|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Context}} & \multicolumn{1}{c|}{\textbf{Method}}                           \\ \hline
+		HTML element content                   & node.textContent = userInput 									\\ \hline
+		HTML attribute value                   & element.setAttribute(attribute, userInput)                   	\\ \hline
+		URL query value                        & window.encodeURIComponent(userInput)                           \\ \hline
+		CSS value                              & element.style.property = userInput                             \\ \hline
+	\end{tabular}
+\end{table}
+
+However, encoding is not perfect. Sometimes we may want to allow some html in the user input (a forum where the users can apply format to the posts for example) and if we encode everything, it would be displayed as plain text and wouldn't work. Also sometimes encoding can't protect the application from other attacks, like inserting a valid URL beginning in "javascript:" + javascript function. This is a valid URL that tells the browser that the following has to be interpreted using js. As you can see, this is a attack vector to insert malicious js, but because we don't use html tags, the encoding can't protect it.
+
+\subsubsection{Validation}
+Validation consists in removing the malicious parts of a user input. If we are validating an input that has some html tags, we can allow those that are inoffensive like <p>, but filtering others like <script>.
+
+When it comes to classification of the input, it is recommended to apply a whitelist approach. White listing consists of having a list of allowed patterns, and everything else that is not found in the white list gets flagged as malicious. This is much more secure than blacklisting, because there are many variations of a simple exploit and we should blacklist all of them to be safe. Also, as technologies evolve, our blacklist may be outdated every time a new version of html or js is released. 
+
+When a user input has been analyzed, we have two different approaches.
+
+\begin{itemize}
+\item Rejection: If any of the input has been flagged as potentially malicious or not found in our white list, the easiest approach is to clear the input completely. This is also very easy to implement at software level. 
+
+\item Sanitation: Only the invalid parts of the input are removed. For example if we have a HTML formatted text, the allowed tags such as <h1>, <p>, etc ...  remain, but the tag <script> and all its contents are removed.
+\end{itemize}
+
+%% practs
+Imagine we have the following application. The most intuitive thing would be to attempt a DOM based XSS. To do this we would insert a <script> ... </script> attack
+\begin{lstlisting}[style=JavaScript]
+<!DOCTYPE html>
+<html>
+<body>
+
+<form id="myForm">
+Link to insert: <input type="text"><br>
+</form> 
+<button onclick="myFunction()">Insert link</button>
+<a href="https://example.com/">Check this link</a>
+<p id="output">This links to https://example.com/</p>
+
+<script>
+function myFunction() {
+	var x = document.getElementById("myForm").elements[0].value;
+	document.querySelector('a').href = x;
+	document.getElementById("output").innerHTML = "This links to:" + x;
+}
+</script>
+
+</body>
+</html>
+
+\end{lstlisting}
+
 
 

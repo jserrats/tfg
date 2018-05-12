@@ -2,7 +2,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 
-app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
 
 db = [];

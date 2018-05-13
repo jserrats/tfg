@@ -1,8 +1,6 @@
 var express = require('express');
 var app = express();
 
-app.set('view engine', 'pug');
-
 db = {
     "apples": 2,
     "watermelons": 5,
@@ -10,7 +8,14 @@ db = {
 };
 
 app.get('/', function (req, res) {
-    res.render('index', {title: 'Fruit stock tracker', message: 'Write the name of the fruit to know how many we have'})
+    res.send("<html><head>" +
+        "<title>Fruit stock tracker</title></head>" +
+        "<body><h1>Write the name of the fruit to know how many we have</h1>" +
+        "<div><form action=\"/search\" method=\"GET\">" +
+        "<input type=\"text\" name=\"searchquery\"/>" +
+        "<input type=\"submit\" value=\"Submit\"/>" +
+        "</form></div>" +
+        "</body></html>")
 });
 
 

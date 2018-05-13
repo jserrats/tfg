@@ -1,0 +1,11 @@
+\begin{Exercise}[label={websec-xss-types}]
+	Modify the source code of all three of the previous exercises so they are no longer vulnerable to a basic attack.
+\end{Exercise}
+\begin{Answer}[ref={websec-xss-types}]
+	\subsection{Stored XSS}
+	Due to the fact that the application does not have any kind of XSS protection, the injection is as easy as typing <script>alert</script> in any of the form fields. The next user that loads the comments will be affected by this XSS.
+	\subsection{Reflected XSS}
+	As we can see, the code parses the GET request parameters directly into the application. To trigger an alert() we only would have to send the victim an URL like: http://localhost:8000/search?searchquery=<script>alert()</script>
+	\subsection{DOM based XSS}
+	AS before, the answer is to write <script>alert()</script> into the form.
+\end{Answer}

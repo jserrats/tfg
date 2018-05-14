@@ -1,11 +1,93 @@
-\begin{Exercise}[label={websec-xss-types}]
-	Modify the source code of all three of the previous exercises so they are no longer vulnerable to a basic attack.
+\begin{Exercise}[label={websec-xss-prevention}]
+	Modify the source code of all three of the previous exercises so they are no longer vulnerable to a basic attack. You can use an external node library to help you.
+	\subsubsection{Reflexted XSS}
+	Protect the application as you find best.
+	\subsubsection{Stored XSS}
+	Find a solution that allows the users to format their posts with HTML (headers, paragraphs, etc) but is secure against XSS.
 \end{Exercise}
-\begin{Answer}[ref={websec-xss-types}]
-	\subsection{Stored XSS}
-	Due to the fact that the application does not have any kind of XSS protection, the injection is as easy as typing <script>alert</script> in any of the form fields. The next user that loads the comments will be affected by this XSS.
-	\subsection{Reflected XSS}
-	As we can see, the code parses the GET request parameters directly into the application. To trigger an alert() we only would have to send the victim an URL like: http://localhost:8000/search?searchquery=<script>alert()</script>
-	\subsection{DOM based XSS}
-	AS before, the answer is to write <script>alert()</script> into the form.
+\begin{Answer}[ref={websec-xss-prevention}]
+	The following are the proposed solutions for securing the application. Keep in mind that this solutions aren't unique.
+	
+	\subsubsection{Reflected XSS}
+	Since we don't need to allow any kind of code or html tag, encoding is the best approach. Using the library htmlencode, we encode the parameter searchquery before passing it to the browser. Now when we try to do <script>alert()</script>, the browser will display that instead of executing it.
+		\begin{lstlisting}[style=JavaScript]
+		var express = require('express');
+		var htmlencode = require('htmlencode');
+		var app = express();
+		
+		db = {
+		"apples": 2,
+		"watermelons": 5,
+		"pineapples": 3
+		};
+		
+		app.get('/', function (req, res) {
+		res.send("<html><head>" +
+		"<title>Fruit stock tracker</title></head>" +
+		"<body><h1>Write the name of the fruit to know how many we have</h1>" +
+		"<div><form action=\"/search\" method=\"GET\">" +
+		"<input type=\"text\" name=\"searchquery\"/>" +
+		"<input type=\"submit\" value=\"Submit\"/>" +
+		"</form></div>" +
+		"</body></html>")
+		});
+		
+		
+		app.get('/search', function (req, res) {
+		var query = req.query.searchquery;
+		var result = db[query];
+		res.send('<html>' +
+		'<head>' +
+		'<title>Fruit stock tracker</title>' +
+		'</head>' +
+		'<body>' +
+		'We have ' + result + ' ' + htmlencode.htmlEncode(query) +
+		'</body>' +
+		'</html>')
+		});
+		app.listen(8000, () => console.log('Listening on 8000'));
+		\end{lstlisting}
+	\subsubsection{Stored XSS}
+		\begin{lstlisting}[style=JavaScript]
+		var express = require('express');
+		var bodyParser = require('body-parser');
+		var sanitizeHtml = require('sanitize-html');
+		
+		var app = express();
+		
+		app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
+		
+		db = [];
+		
+		app.get('/', function (req, res) {
+		list = "<ul>";
+		for (var i = 0; i < db.length; i++) {
+		list += "<li>" + sanitizeHtml(db[i].user) + " said: " + sanitizeHtml(db[i].comment, {
+		allowedTags: ['b', 'i', 'em', 'strong', 'h1']
+		}) + "</li>"
+		}
+		list += "</ul>";
+		
+		res.send('<html>' +
+		'<head>' +
+		'<title>The cat forum</title>' +
+		'</head>' +
+		'<body>' +
+		"<h1>The Cat Forum. A place to talk about cats. </h1>" +
+		list +
+		"<form action=\"/comment\" method=\"POST\"><div><label>User</label><input type=\"text\" name=\"user\"/></div><div><label>Comment</label><input type=\"text\" name=\"comment\"/></div><div><input type=\"submit\" value=\"Post your comment\" size=\"100\"/></div></form>" +
+		'</body>' +
+		'</html>')
+		});
+		
+		app.post('/comment', function (req, res) {
+		db.push({comment: req.body.comment, user: req.body.user});
+		res.redirect("/");
+		});
+		
+		app.listen(8000, () => console.log('Listening on 8000'));
+		\end{lstlisting}
+	\subsubsection{DOM based XSS}
+	\begin{lstlisting}[style=JavaScript]
+	\end{lstlisting}
 \end{Answer}

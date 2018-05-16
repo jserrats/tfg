@@ -5,6 +5,33 @@
 	\subsubsection{Stored XSS}
 	Find a solution that allows the users to format their posts with HTML (headers, paragraphs, etc) but is secure against XSS.
 \end{Exercise}
+\begin{Exercise}[label={websec-xss-breakingcontext}]
+	The following application puts the form input into the link and also displays it in the html.
+	\begin{lstlisting}[style=JavaScript]
+	<!DOCTYPE html>
+	<html>
+	<body>
+
+	<form id="myForm">
+	Link to insert: <input type="text"><br>
+	</form> 
+	<button onclick="myFunction()">Insert link</button>
+	<a href="https://example.com/">Check this link</a>
+	<p id="output">This links to https://example.com/</p>
+	
+	<script>
+	function myFunction() {
+	var x = document.getElementById("myForm").elements[0].value;
+	document.querySelector('a').href = x;
+	document.getElementById("output").innerHTML = "This links to:" + x;
+	}
+	</script>
+	
+	</body>
+	</html>
+	
+	\end{lstlisting}
+\end{Exercise}
 \begin{Answer}[ref={websec-xss-prevention}]
 	The following are the proposed solutions for securing the application. Keep in mind that this solutions aren't unique.
 	

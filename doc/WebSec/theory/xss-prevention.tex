@@ -68,30 +68,3 @@ When a user input has been analyzed, we have two different approaches.
 
 \item Sanitation: Only the invalid parts of the input are removed. For example if we have a HTML formatted text, the allowed tags such as <h1>, <p>, etc ...  remain, but the tag <script> and all its contents are removed.
 \end{itemize}
-
-%% practs
-Imagine we have the following application. The most intuitive thing would be to attempt a DOM based XSS. To do this we would insert a <script> ... </script> attack
-\begin{lstlisting}[style=JavaScript]
-<!DOCTYPE html>
-<html>
-<body>
-
-<form id="myForm">
-Link to insert: <input type="text"><br>
-</form> 
-<button onclick="myFunction()">Insert link</button>
-<a href="https://example.com/">Check this link</a>
-<p id="output">This links to https://example.com/</p>
-
-<script>
-function myFunction() {
-	var x = document.getElementById("myForm").elements[0].value;
-	document.querySelector('a').href = x;
-	document.getElementById("output").innerHTML = "This links to:" + x;
-}
-</script>
-
-</body>
-</html>
-
-\end{lstlisting}

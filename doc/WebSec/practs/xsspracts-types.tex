@@ -93,26 +93,25 @@
 		app.listen(8000, () => console.log('Example app listening on port 8000!'));
 		\end{lstlisting}
 		\begin{lstlisting}[style=JavaScript]
-		<html>
-		<head>
-		</head>
-		<body>
-		What is your name?
-		<div>
-		<form action="/" method="GET">
-		<input type="text" name="name"/>
-		<input type="submit" value="Submit"/>
-		</form>
-		</div>
-		<script>
-		var pos = document.URL.indexOf("name=") + 5;
-		var userInput = document.URL.substring(pos, document.URL.length);
-		if (pos !== 4) {
-		document.write("Hello " + unescape(userInput) + "!");
-		}
-		</script>
-		</body>
-		</html>
+			<!DOCTYPE html>
+			<html>
+			<body>
+			
+			<form id="myForm">
+			What is your name?: <input type="text"><br>
+			</form>
+			<button onclick="getName()">Done</button>
+			<p id="output"></p>
+			
+			<script>
+			function getName(){
+			var x = document.getElementById("myForm").elements[0].value;
+			document.getElementById("output").innerHTML = "Hello, " + x;
+			}
+			</script>
+			
+			</body>
+			</html>
 		\end{lstlisting}
 \end{Exercise}
 \begin{Answer}[ref={websec-xss-types}]

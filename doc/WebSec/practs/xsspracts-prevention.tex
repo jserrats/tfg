@@ -5,33 +5,7 @@
 	\subsubsection{Stored XSS}
 	Find a solution that allows the users to format their posts with HTML (headers, paragraphs, etc) but is secure against XSS.
 \end{Exercise}
-\begin{Exercise}[label={websec-xss-breakingcontext}]
-	The following application puts the form input into the link and also displays it in the html.
-	\begin{lstlisting}[style=JavaScript]
-	<!DOCTYPE html>
-	<html>
-	<body>
 
-	<form id="myForm">
-	Link to insert: <input type="text"><br>
-	</form> 
-	<button onclick="myFunction()">Insert link</button>
-	<a href="https://example.com/">Check this link</a>
-	<p id="output">This links to https://example.com/</p>
-	
-	<script>
-	function myFunction() {
-	var x = document.getElementById("myForm").elements[0].value;
-	document.querySelector('a').href = x;
-	document.getElementById("output").innerHTML = "This links to:" + x;
-	}
-	</script>
-	
-	</body>
-	</html>
-	
-	\end{lstlisting}
-\end{Exercise}
 \begin{Answer}[ref={websec-xss-prevention}]
 	The following are the proposed solutions for securing the application. Keep in mind that this solutions aren't unique.
 	
@@ -115,6 +89,25 @@
 		app.listen(8000, () => console.log('Listening on 8000'));
 		\end{lstlisting}
 	\subsubsection{DOM based XSS}
-	\begin{lstlisting}[style=JavaScript]
+	The solution is as easy as changing the .innerHTML method for .textContent. As we have seen the method textContent does input validation.
+	\begin{lstlisting}[style=JavaScript]<!DOCTYPE html>
+	<html>
+	<body>
+	
+	<form id="myForm">
+	What is your name?: <input type="text"><br>
+	</form>
+	<button onclick="getName()">Done</button>
+	<p id="output"></p>
+	
+	<script>
+	function getName(){
+	var x = document.getElementById("myForm").elements[0].value;
+	document.getElementById("output").textContent = "Hello, " + x;
+	}
+	</script>
+	
+	</body>
+	</html>
 	\end{lstlisting}
 \end{Answer}

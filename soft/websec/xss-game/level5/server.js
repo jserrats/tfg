@@ -10,8 +10,6 @@ app.get('/', function (req, res) {
         res.send("<!doctype html>\n" +
             "<html>\n" +
             "  <head>\n" +
-            "    <!-- Internal game scripts/styles, mostly boring stuff -->\n" +
-            "    <script src=\"/static/game-frame.js\"></script>\n" +
             "    <link rel=\"stylesheet\" href=\"/static/game-frame-styles.css\" />\n" +
             "  </head>\n" +
             " \n" + "  <body id=\"level5\">\n    Welcome! Today we are announcing the much anticipated<br><br>\n" +
@@ -29,8 +27,6 @@ app.get('/signup', function (req, res) {
     res.send('<!doctype html>\n' +
         '<html>\n' +
         '  <head>\n' +
-        '    <!-- Internal game scripts/styles, mostly boring stuff -->\n' +
-        '    <script src="/static/game-frame.js"></script>\n' +
         '    <link rel="stylesheet" href="/static/game-frame-styles.css" />\n' +
         '  </head>\n' +
         ' \n' +
@@ -49,8 +45,6 @@ app.get('/confirm', function (req, res) {
     res.send('<!doctype html>\n' +
         '<html>\n' +
         '  <head>\n' +
-        '    <!-- Internal game scripts/styles, mostly boring stuff -->\n' +
-        '    <script src="/static/game-frame.js"></script>\n' +
         '    <link rel="stylesheet" href="/static/game-frame-styles.css" />\n' +
         '  </head>\n' +
         ' \n' +

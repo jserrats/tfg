@@ -11,7 +11,6 @@ app.get('/', function (req, res) {
             res.send("<!doctype html>\n" +
                 "<html>\n" +
                 "<head>\n" +
-                "    <script src=\"/static/game-frame.js\"></script>\n" +
                 "    <link rel=\"stylesheet\" href=\"/static/game-frame-styles.css\"/>\n" +
                 "\n" +
                 "    <script>\n" +

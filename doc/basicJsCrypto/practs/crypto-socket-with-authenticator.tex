@@ -32,7 +32,7 @@ This software is going to have three parts: client, server and authenticator. Th
   "main": "authenticator.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node cors-server.js"
   },
   "author": "",
   "license": "ISC",
@@ -119,7 +119,7 @@ proxy.once('data', async function (proxy_public_key) {
 
 
 \begin{lstlisting}[style=JavaScript]
-//server.js
+//cors-server.js
 const net = require('net');
 const crypto = require('crypto');
 const NodeRSA = require('node-rsa');

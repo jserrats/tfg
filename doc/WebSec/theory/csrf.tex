@@ -42,7 +42,7 @@ When the user clicks what he suspects is a link, a form request genereates a POS
 \subsection{CSRF Prevention}
 There are two steps in CSRF protection. Check origin and CSRF token.
 %https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
-\subsubsection{Check origin}
+\subsubsection{Check 	origin}
 To identify the source, we can check one of this HTTP headers, Origin Header and Referer Header.
 The Origin Header is one of the Headers that cannot be edited by the js running in the browser. It can only be created and modified by the browser, so if we are assuming the victim's browser is safe, the header can be trusted. If this header is present, it should be checked to make sure it matches the destination. Acording to https://wiki.mozilla.org/Security/Origin, Origin headers are included when the request is originated inside an iframe, a form or through js.If there's no Origin header, then we should check the referer header. The referer identifies the adress of the webpage that linked to the source being requested. If there aren't any of this headers, the recommended thing to do is to reject the request.
 \subsubsection{CSRF token}

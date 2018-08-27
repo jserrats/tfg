@@ -1,1 +1,30 @@
-\section{HTTP}
+\section{HTTP Vulnerabilities}
+HTTP is an old protocol that was designed for a time were security was not a priority. As such, it provides no form of authenticity, confidentiality nor integrity. These three properties are fundamental when designing a secure application.	
+
+\subsubsection{Confidentiality}
+A system is confidential when a message between A and B cannot be read by any third party that is in between. Both the request and the server response in HTTP can be intercepted easily by any agent present in the connection between the browser and the server (other programs in the same computer, other users in the same local network, the ISP, any router that routes the packet, any proxy used, etc). With this in mind, it becomes obvious that designing a system that handles sensitive information using HTTP is a bad idea.
+
+Sensitive information can take the form of
+\begin{itemize}
+	\item Passwords
+	\item HTTP Cookies
+	\item Personalized info meant for a single user (f.e. private messages in a social network)
+\end{itemize}
+
+This lack of confidentiality can also be used by ISP's to sell consumer habits to third parties and by Governments to massively surveille the population and detect individuals with opposed political views for example
+
+\subsubsection{Authenticity}
+The property of authenticity is applied to system when the party involved (in this case the server) can prove their identity. In an HTTP connection, the lack of authenticity could be abused to provide false or malicious content or steal cookies and login credentials to an unaware client. 
+
+This is usually achieved by poisoning DNS queries inserting the IP of malicious server in the DNS response.
+
+\begin{itemize}
+	\item User connecting to a guest network (e.g. A coffeshop wifi) that has it's DNS server configured in such a way that responses have the IP of a malicious server instead of the requested.
+	\item Performing a Man in the Middle attack and modifying the legitimate DNS response with a malicious IP
+	\item Malware can modify the Hosts file of the system. If a domain is found on the hosts file, the host won't make a DNS query and use the value found instead.
+\end{itemize}
+
+All these attacks have the same final objective. When the user introduces the URL in the browser, instead of connecting to the legitimate server related to the domain, he will be connected to a different server that is under the control of the attacker, allowing him full control of the content delivered.
+
+\subsubsection{Integrity}
+The integrity of a communication is the property that ensures that the message has not been altered while going from the sender to the destination. Since HTTP does not assure integrity, this means that any intermediary (router, proxy or attacker that has performed Man in the Middle) can add, delete or modify any content served by the server. This includes malicious js code inserted in a HTML file, or even a malicious payload inserted in a file download.

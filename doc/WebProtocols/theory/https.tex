@@ -40,5 +40,21 @@ A certificate contains the following information:
 
 % hsts
 
-\subsection{HTTP Strict Transport Security}
+\subsection{HTTP Strict Transport Security (HSTS)} 
+HSTS is a mechanism used by the web servers to tell browsers that they should only interact with them using HTTPS. When HTSTS is enabled on a server, the server responds the requests with the header \textbf{Strict-Transport-Security} indicating a time period in seconds on which the browser should only use HTTPS to connect to that domain. Browsers should do the following when contacting a HSTS enabled domain.
+\begin{itemize}
+	\item Always connect via https. If the user introduces a link that begins with http://, automatically transform it to https. The browser should never attempt to do any connection via http.
+	\item If the certificate is not valid (expired, self signed, etc), the browser should terminate the connection immediately.
+\end{itemize}
 
+The mechanism is used to protect the connection from \textbf{downgrade attacks}. If a malicious agent could poison the dns responses for a user in order to point them to a server that he controls, he could be able to use a proxy that establishes a http connection to the user and a https connection to the original server. The user would only see that the connection is https, but for most users that would not raise any suspicion.
+
+\begin{figure}[htb]
+	\begin{centering}
+		\includegraphics[width=0.7\columnwidth]{\securitydir/WebProtocols/figures/hsts}
+		\par
+	\end{centering}
+	\caption{\label{fig:hsts} Downgrade attack without HSTS enabled}
+\end{figure}
+
+If HSTS was enabled in this scenario, the browser would refuse to connect to the proxy as the connection was plain http. 

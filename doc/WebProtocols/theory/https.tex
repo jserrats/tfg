@@ -11,9 +11,17 @@ When connecting to a site that uses https, the URL begins with \textbf{https://}
 
 
 \subsubsection{TLS Handshake}
-Before any data is transmitted, a TLS Handshake is performed. The goal of this handshake is to privately exchange the keys that will be used to encrypt the transmission and to authenticate the server. 
+Before any data is transmitted, a TLS Handshake is performed. The goal of this handshake is to privately exchange the keys that will be used to encrypt the transmission and to authenticate the server. The protocol allows for the authentication of both the server and the client, but in this explanation we'll omit the client authentication as it is not used in usual HTTPS connections. 
 
-% TODO
+\begin{figure}[htb]
+	\begin{centering}
+		\includegraphics[width=0.7\columnwidth]{\securitydir/WebProtocols/figures/tls}
+		\par
+	\end{centering}
+	\caption{\label{fig:tls} TLS handshake}
+\end{figure}
+
+
 
 \subsubsection{Public key certificates}
 A public key certificate is an electronic document that the server uses to prove the ownership of a public key (therefore, its identity). Valid certificates have to be signed by a Certificate Authority (CA). A CA is a trusted third party (usually a company) that signs the certificates of the clients with its own certificate. Because it is not possible to have the certificates of all the CA that exist, their certificate is signed by another, called the \textbf{Root Certificate}. This root certificate is obtained when installing the operating system or the web browser. With this system we've established a \textbf{chain of trust}. When we visit a website we download its certificate. Then we check the CA that has issued it, and so on until we reach the root certificate. If the root certificate is found within the trusted by our system, we'll assume the certificate is valid, and that the server we are connecting to really owns this public key. 

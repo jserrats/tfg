@@ -1,11 +1,12 @@
 \begin{Exercise}[label={websec-xss-prevention}]
 	Modify the source code of all three of the previous exercises so they are no longer vulnerable to a basic attack. You can use an external node library to help you.
+	
 	\subsubsection{Reflected XSS}
-	Protect the application as you find best.
+	Find a way to block possible javascript injections, but whithout removing characters or combination of characters (We don't want to restrain our users the possibility to search for \textbf{<script>} for example.)
 	\subsubsection{Stored XSS}
-	Find a solution that allows the users to format their posts with HTML (headers, paragraphs, etc) but is secure against XSS.
+	Find a solution that allows the users to format their posts with HTML (headers, paragraphs, etc) but is secure against XSS. Which html tags can be used maliciously? Which ones are safe to allow?
 	\subsubsection{DOM based XSS}
-	Protect the application as you find best.
+	There is a simple function in js that allows to insert text safely into html.
 \end{Exercise}
 
 \begin{Answer}[ref={websec-xss-prevention}]
@@ -51,6 +52,7 @@
 		app.listen(8000, () => console.log('Listening on 8000'));
 		\end{lstlisting}
 	\subsubsection{Stored XSS}
+		Using the library \textbf{sanitize-html}, or any similar, we can parse the user input in order to remove the potentially malicious tags. Remember that is safer to whitelist the safe tags, than to blacklist the unsafe ones.
 		\begin{lstlisting}[style=JavaScript]
 		var express = require('express');
 		var bodyParser = require('body-parser');

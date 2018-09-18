@@ -1,16 +1,64 @@
 
 \begin{Exercise}[label={websec-xss-game}]
-	The final exercise is game developed by google to teach developers the basics of XSS. The game can be found at https://xss-game.appspot.com/. Since all this course is based on node, and the back-end of the original game is developed in python, we've made our own version. 
+	The final exercise is game developed by google to teach developers the basics of XSS. The original game can be found at \textbf{https://xss-game.appspot.com/}. Since all this course is based on node, and the back-end of the original game is developed in python, we've made our own version that runs locally. 
 	
-	The game has 6 levels, and each of them explore a diferent type of exploit. Beware that there are several ways to beat each level, and the final objective is to trigger an alert function.
+	The game has 5 levels, and each of them explore a different type of exploit. Beware that there are several ways to beat each level, and the final objective is to trigger an \textbf{alert()} function.
+	
+	You can look at the source code of the backend in order to look for vulnerabilities (not like in real life!)
 	
 	\subsubsection{Level 1}
-	\paragraph{Mission Description}
-	This level demonstrates a common cause of cross-site scripting where user input is directly included in the page without proper escaping. 
-	
-	Interact with the vulnerable application window below and find a way to make it execute JavaScript of your choosing. You can take actions inside the vulnerable window or directly edit its URL bar.
-	\paragraph{Mission Objective}
-	Inject a script to pop up a JavaScript alert() in the frame below. 
+		\paragraph{Mission Description}
+		This level demonstrates a common cause of cross-site scripting where user input is directly included in the page without proper escaping. 
+		
+		\paragraph{Mission Objective}
+		Inject a script to pop up a JavaScript alert() in the frame below.
+		
+		\paragraph{Hints}
+		\begin{itemize}
+			\item What happens when you enter a presentational tag such as <h1>?
+			\item Alright, one last hint: <script> ... alert ... 
+		\end{itemize}
+		
+		\paragraph{Code}
+		\textbf{server.js}
+		\begin{lstlisting}[style=JavaScript]
+		const express = require('express');
+		const app = express();
+		
+		app.use(express.static('..'));
+		
+		const page_header = "<!doctype html>" +
+		"<html>" +
+		"<head>" +
+		"<link rel=\"stylesheet\" href=\"/static/game-frame-styles.css\" />" +
+		"</head>" +
+		"<body id=\"level1\">" +
+		"<img src=\"/static/logos/level1.png\">" +
+		"<div>";
+		const main_page_markup =
+		"<form action=\"\" method=\"GET\">" +
+		"<input id=\"query\" name=\"query\" value=\"Enter query here...\" onfocus=\"this.value=''\">" +
+		"<input id=\"button\" type=\"submit\" value=\"Search\">" +
+		"</form>";
+		
+		const page_footer =
+		"</div>" +
+		"</body>" +
+		"</html>";
+		
+		app.get('/', function (req, res) {
+		let q = req.query.query;
+		if (q) {
+		res.send(page_header +
+		"Sorry, no results were found for <b>" + q + "</b></br><a href='?'>Try again</bra>" +
+		page_footer)
+		} else {
+		res.send(page_header + main_page_markup + page_footer)
+		}
+		});
+		
+		app.listen(8000, () => console.log('Example app listening on port 8000!'));
+		\end{lstlisting}
 
 	\subsubsection{Level 2}
 		\paragraph{Mission Description}
@@ -19,55 +67,398 @@
 		This level shows how easily XSS bugs can be introduced in complex apps.
 		\paragraph{Mission Objective}
 		Inject a script to pop up an alert() in the context of the application. 
-	
+		
+		\paragraph{Hints}
+		\begin{itemize}
+			\item Note that the "welcome" post contains HTML, which indicates that the template doesn't escape the contents of status messages.
+			\item Entering a <script> tag on this level will not work. Try an element with a JavaScript attribute instead.
+			\item This level is sponsored by the letters i, m and g and the attribute onerror.
+		\end{itemize}
+
+		
+		\paragraph{Code}
+		\textbf{server.js}
+		\begin{lstlisting}[style=JavaScript]
+		const express = require('express');
+		var path = require('path');
+		const app = express();
+		app.use(express.static('..'));
+		
+		app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
+		
+		app.listen(8000, () => console.log('Example app listening on port 8000!'));
+		\end{lstlisting}
+		\textbf{index.html}
+		\begin{lstlisting}[style=JavaScript]6
+		<!doctype html>
+		<html>
+		<head>
+		<link rel="stylesheet" href="/static/game-frame-styles.css"/>
+		
+		<!-- This is our database of messages -->
+		<script src="/static/post-store.js"></script>
+		
+		<script>
+		var defaultMessage = "Welcome!<br><br>This is your <i>personal</i>"
+		+ " stream. You can post anything you want here, especially "
+		+ "<span style='color: #f00ba7'>madness</span>.";
+		
+		var DB = new PostDB(defaultMessage);
+		
+		function displayPosts() {
+		var containerEl = document.getElementById("post-container");
+		containerEl.innerHTML = "";
+		
+		var posts = DB.getPosts();
+		for (var i = 0; i < posts.length; i++) {
+		var html = '<table class="message"> <tr> <td valign=top> '
+		+ '<img src="/static/level2_icon.png"> </td> <td valign=top '
+		+ ' class="message-container"> <div class="shim"></div>';
+		
+		html += '<b>You</b>';
+		html += '<span class="date">' + new Date(posts[i].date) + '</span>';
+		html += "<blockquote>" + posts[i].message + "</blockquote";
+		html += "</td></tr></table>"
+		containerEl.innerHTML += html;
+		}
+		}
+		
+		window.onload = function () {
+		document.getElementById('clear-form').onsubmit = function () {
+		DB.clear(function () {
+		displayPosts()
+		});
+		return false;
+		}
+		
+		document.getElementById('post-form').onsubmit = function () {
+		var message = document.getElementById('post-content').value;
+		DB.save(message, function () {
+		displayPosts()
+		});
+		document.getElementById('post-content').value = "";
+		return false;
+		}
+		
+		displayPosts();
+		}
+		
+		</script>
+		
+		</head>
+		
+		<body id="level2">
+		<div id="header">
+		<img src="/static/logos/level2.png"/>
+		<div>Chatter from across the Web.</div>
+		<form action="?" id="clear-form">
+		<input class="clear" type="submit" value="Clear all posts">
+		</form>
+		</div>
+		
+		<div id="post-container"></div>
+		
+		<table class="message">
+		<tr>
+		<td valign="top">
+		<img src="/static/level2_icon.png">
+		</td>
+		<td class="message-container">
+		<div class="shim"></div>
+		<form action="?" id="post-form">
+		<textarea id="post-content" name="content" rows="2"
+		cols="50"></textarea>
+		<input class="share" type="submit" value="Share status!">
+		<input type="hidden" name="action" value="sign">
+		</form>
+		</td>
+		</tr>
+		</table>
+		
+		</body>
+		</html>
+		\end{lstlisting}
 	\subsubsection{Level 3}
 		\paragraph{Mission Description}
-		As you've seen in the previous level, some common JS functions are execution sinks which means that they will cause the browser to execute any scripts that appear in their input. Sometimes this fact is hidden by higher-level APIs which use one of these functions under the hood. 
-		
-		The application on this level is using one such hidden sink.
+		As you've seen in the previous level, some common JS functions are execution sinks which means that they will cause the browser to execute any scripts that appear in their input. Sometimes this fact is hidden by higher-level APIs which use one of these functions under the hood. The application on this level is using one such hidden sink.
 	
 		\paragraph{Mission Objective}
 		As before, inject a script to pop up a JavaScript alert() in the app. 
+		Since you can't enter your payload anywhere in the application, you will have to manually edit the address in the URL bar.
 		
-		Since you can't enter your payload anywhere in the application, you will have to manually edit the address in the URL bar below.
-	
+		\paragraph{Hints}
+		\begin{itemize}
+			\item To locate the cause of the bug, review the JavaScript to see where it handles user-supplied input.
+			\item Data in the window.location object can be influenced by an attacker.
+			\item When you've identified the injection point, think about what you need to do to sneak in a new HTML element.
+			\item As before, using <script> ... as a payload won't work because the browser won't execute scripts added after the page has loaded.
+		\end{itemize}
+		
+		\paragraph{Code}
+		
+		\textbf{server.js}
+		\begin{lstlisting}[style=JavaScript]
+		const express = require('express');
+		var path = require('path');
+		const app = express();
+		app.use(express.static('..'));
+		
+		app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
+		
+		app.listen(8000, () => console.log('Example app listening on port 8000!'));
+		\end{lstlisting}
+		\textbf{index.html}
+		\begin{lstlisting}[style=JavaScript]
+		<html>
+		<head>
+		<link rel="stylesheet" href="/static/game-frame-styles.css"/>
+		
+		<!-- Load jQuery -->
+		<script
+		src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
+		</script>
+		
+		<script>
+		function chooseTab(num) {
+		// Dynamically load the appropriate image.
+		var html = "Image " + parseInt(num) + "<br>";
+		html += "<img src='/static/level3/cloud" + num + ".jpg' />";
+		$('#tabContent').html(html);
+		
+		window.location.hash = num;
+		
+		// Select the current tab
+		var tabs = document.querySelectorAll('.tab');
+		for (var i = 0; i < tabs.length; i++) {
+		if (tabs[i].id == "tab" + parseInt(num)) {
+		tabs[i].className = "tab active";
+		} else {
+		tabs[i].className = "tab";
+		}
+		}
+		
+		}
+		
+		window.onload = function () {
+		chooseTab(unescape(self.location.hash.substr(1)) || "1");
+		}
+		
+		</script>
+		
+		</head>
+		<body id="level3">
+		<div id="header">
+		<img id="logo" src="/static/logos/level3.png">
+		<span>Take a tour of our cloud data center.</span>
+		</div>
+		
+		<div class="tab" id="tab1" onclick="chooseTab('1')">Image 1</div>
+		<div class="tab" id="tab2" onclick="chooseTab('2')">Image 2</div>
+		<div class="tab" id="tab3" onclick="chooseTab('3')">Image 3</div>
+		
+		<div id="tabContent">&nbsp;</div>
+		</body>
+		</html>
+		\end{lstlisting}
+		
 	\subsubsection{Level 4}
-		\paragraph{Mission Description}
-		Every bit of user-supplied data must be correctly escaped for the context of the page in which it will appear. This level shows why.
-	
-		\paragraph{Mission Objective}
-		Inject a script to pop up a JavaScript alert() in the application.
-	
-	\subsubsection{Level 5}
 		\paragraph{Mission Description}
 		Cross-site scripting isn't just about correctly escaping data. Sometimes, attackers can do bad things even without injecting new elements into the DOM.
 	
 		\paragraph{Mission Objective}
 		Inject a script to pop up an alert() in the context of the application.
-	
-	\subsubsection{Level 6}
+		
+		\paragraph{Hints}
+		\begin{itemize}
+			\item The title of this level is a hint.
+			\item It is useful look at the source of the signup frame and see how the URL parameter is used.
+			\item If you want to make clicking a link execute Javascript (without using the onclick handler), how can you do it?
+		\end{itemize}
+		paragraph{Code}
+		
+		\textbf{server.js}
+		\begin{lstlisting}[style=JavaScript]
+		const express = require('express');
+		const app = express();
+		app.use(express.static('..'));
+		app.use(function (req, res, next) {
+		res.header('X-XSS-Protection', '0');
+		next();
+		});
+		app.get('/', function (req, res) {
+		
+		res.send("<!doctype html>\n" +
+		"<html>\n" +
+		"  <head>\n" +
+		"    <link rel=\"stylesheet\" href=\"/static/game-frame-styles.css\" />\n" +
+		"  </head>\n" +
+		" \n" + "  <body id=\"level5\">\n    Welcome! Today we are announcing the much anticipated<br><br>\n" +
+		"    <img src=\"/static/logos/level5.png\" /><br><br>\n" +
+		" \n" +
+		"    <a href=\"/signup?next=confirm\">Sign up</a> \n" +
+		"    for an exclusive Beta.\n" +
+		"  </body>\n" +
+		"</html>")
+		}
+		);
+		
+		app.get('/signup', function (req, res) {
+		let next = req.query.next;
+		res.send('<!doctype html>\n' +
+		'<html>\n' +
+		'  <head>\n' +
+		'    <link rel="stylesheet" href="/static/game-frame-styles.css" />\n' +
+		'  </head>\n' +
+		' \n' +
+		'  <body id="level5">\n' +
+		'    <img src="/static/logos/level5.png" /><br><br>\n' +
+		'    <!-- We\'re ignoring the email, but the poor user will never know! -->\n' +
+		'    Enter email: <input id="reader-email" name="email" value="">\n' +
+		' \n' +
+		'    <br><br>\n' +
+		'    <a href="' + next + '">Next >></a>\n' +
+		'  </body>\n' +
+		'</html>')
+		});
+		app.get('/confirm', function (req, res) {
+		let next = req.query.next;
+		res.send('<!doctype html>\n' +
+		'<html>\n' +
+		'  <head>\n' +
+		'    <link rel="stylesheet" href="/static/game-frame-styles.css" />\n' +
+		'  </head>\n' +
+		' \n' +
+		'  <body id="level5">\n' +
+		'    <img src="/static/logos/level5.png" /><br><br>\n' +
+		'    Thanks for signing up, you will be redirected soon...\n' +
+		'    <script>\n' +
+		'      setTimeout(function() { window.location = \'' + "/" + '\'; }, 5000);\n' +
+		'    </script>\n' +
+		'  </body>\n' +
+		'</html>')
+		});
+		
+		app.listen(8000, () => console.log('Example app listening on port 8000!'));
+		\end{lstlisting}
+	\subsubsection{Level 5}
 		\paragraph{Mission Description}
 		Complex web applications sometimes have the capability to dynamically load JavaScript libraries based on the value of their URL parameters or part of location.hash. 
 		
 		This is very tricky to get right -- allowing user input to influence the URL when loading scripts or other potentially dangerous types of data such as XMLHttpRequest often leads to serious vulnerabilities.
 		
-	
+		
 		\paragraph{Mission Objective}
 		Find a way to make the application request an external file which will cause it to execute an alert(). 
 		
-	
+		\paragraph{Hints}
+		\begin{itemize}
+		\item See how the value of the location fragment (after #) influences the URL of the loaded script.
+		\item Is the security check on the gadget URL really foolproof?
+		\end{itemize}
+		\paragraph{Code}
+		
+		\textbf{server.js}
+		\begin{lstlisting}[style=JavaScript]
+		const express = require('express');
+		var path = require('path');
+		const app = express();
+		app.use(express.static('..'));
+		
+		app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
+		
+		app.listen(8000, () => console.log('Example app listening on port 8000!'));
+		\end{lstlisting}
+		
+		
+		\textbf{index.html}
+		\begin{lstlisting}[style=JavaScript]
+		<!doctype html>
+		<html>
+		
+		<head>
+		
+		<link rel="stylesheet" href="/static/game-frame-styles.css"/>
+		
+		
+		<script>
+		function setInnerText(element, value) {
+		if (element.innerText) {
+		element.innerText = value;
+		} else {
+		element.textContent = value;
+		}
+		}
+		
+		function includeGadget(url) {
+		var scriptEl = document.createElement('script');
+		
+		// This will totally prevent us from loading evil URLs!
+		if (url.match(/^https?:\/\//)) {
+		setInnerText(document.getElementById("log"),
+		"Sorry, cannot load a URL containing \"http\".");
+		return;
+		}
+		
+		// Load this awesome gadget
+		scriptEl.src = url;
+		
+		// Show log messages
+		scriptEl.onload = function () {
+		setInnerText(document.getElementById("log"),
+		"Loaded gadget from " + url);
+		}
+		scriptEl.onerror = function () {
+		setInnerText(document.getElementById("log"),
+		"Couldn't load gadget from " + url);
+		}
+		
+		document.head.appendChild(scriptEl);
+		}
+		
+		// Take the value after # and use it as the gadget filename.
+		function getGadgetName() {
+		return window.location.hash.substr(1) || "/static/gadget.js";
+		}
+		
+		includeGadget(getGadgetName());
+		
+		// Extra code so that we can communicate with the parent page
+		window.addEventListener("message", function (event) {
+		if (event.source == parent) {
+		includeGadget(getGadgetName());
+		}
+		}, false);
+		
+		</script>
+		
+		</head>
+		
+		
+		<body id="level6">
+		<img src="/static/logos/level6.png">
+		<img id="cube" src="/static/level6_cube.png">
+		
+		<div id="log">Loading gadget...</div>
+		
+		</body>
+		</html>
+		\end{lstlisting}
+		
 \end{Exercise}
 \begin{Answer}[ref={websec-xss-game}]
 	\subsubsection{Level 1}
+	This is a very simple reflected XSS. The backend does not encode or sanitize the user's input, so any js code inside a script tag inserted gets executed. The code can be inserted in the form, or even directly as a get parameter in the URL.
 	\verb|<script>alert()</script>|
 	\subsubsection{Level 2}
-	\verb|<img src='stuff' onerror='alert()'>|
+	We can't just make a post with script tags, since JS inside script tags is only executed once when the page is loaded. To achieve this, we can use the onerror tag. This tag is meant to be used as error handling, and can contain JS. We'll use the img tag as we were inserting and image, but refer to an inexistent url. When the browser fails to find this nonexistant image, the onerror tag will be executed.
+	\verb|<img src='fake_url_that_does_not_exist' onerror='alert()'>|
 	\subsubsection{Level 3}
-	\verb|https://localhost:8000/#1.jpg'onload='alert("xss")'|
+	By requesting the following URL, we'll exploit the fact that this applications insert the parameter directly into the html. We'll also use the onerror tag.
+	\verb|https://localhost:8000/#noexist.jpg'onerror='alert("xss")'|
 	\subsubsection{Level 4}
-	\verb|?timer=')%3Balert(1)%3Bvar b=('|
-	\subsubsection{Level 5}
+	Since the form inside the web does not do anything, it is clear that the objective is the URL. In the signup URL, there is a GET parameter that indicates where the page will redirect us next. This parameter get inserted in an \textbf{a tag} that is inserted in the page. We can profit the fact that everything after \textbf{javascript:} in a href gets executed as JS code when clicked to exploit a XSS.
 	\verb|http://localhost:8000/signup?next=javascript:alert(1)|
-	\subsubsection{Level 6}
+	\subsubsection{Level 5}
+	By looking at the source code of the app, we can see that this site loads the content from another source. By default it loads a file from local static files, but the code is prepared to load other content easily, even though there is a protection to load from an external site. The protection does not allow us to load any url with http with it. We can bypass it by inserting a \textbf{data URI} (https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs)  with the malicious JS.
 	\verb|http://localhost:8000/#data:text/plain,alert('xss')|
 \end{Answer}

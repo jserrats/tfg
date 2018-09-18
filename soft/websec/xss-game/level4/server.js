@@ -1,40 +1,62 @@
 const express = require('express');
-var path = require('path');
 const app = express();
 app.use(express.static('..'));
-
+app.use(function (req, res, next) {
+    res.header('X-XSS-Protection', '0');
+    next();
+});
 app.get('/', function (req, res) {
-        let timer = req.query.timer;
-        res.header('X-XSS-Protection', '0');
-        if (timer) {
 
-            res.send("<!doctype html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <link rel=\"stylesheet\" href=\"/static/game-frame-styles.css\"/>\n" +
-                "\n" +
-                "    <script>\n" +
-                "        function startTimer(seconds) {\n" +
-                "            seconds = parseInt(seconds) || 3;\n" +
-                "            setTimeout(function () {\n" +
-                "                window.confirm(\"Time is up!\");\n" +
-                "                window.history.back();\n" +
-                "            }, seconds * 1000);\n" +
-                "        }\n" +
-                "    </script>\n" +
-                "</head>\n" +
-                "<body id=\"level4\">\n" +
-                "<img src=\"/static/logos/level4.png\"/>\n" +
-                "<br>\n" +
-                "<img src=\"/static/loading.gif\" onload=\"startTimer(" + timer + ");\"/>\n" +
-                "<br>\n" +
-                "<div id=\"message\">Your timer will execute in " + timer + " seconds.</div>\n" +
-                "</body>\n" +
-                "</html>")
-        } else {
-            res.sendFile(path.join(__dirname + '/index.html'))
-        }
+        res.send("<!doctype html>\n" +
+            "<html>\n" +
+            "  <head>\n" +
+            "    <link rel=\"stylesheet\" href=\"/static/game-frame-styles.css\" />\n" +
+            "  </head>\n" +
+            " \n" + "  <body id=\"level5\">\n    Welcome! Today we are announcing the much anticipated<br><br>\n" +
+            "    <img src=\"/static/logos/level5.png\" /><br><br>\n" +
+            " \n" +
+            "    <a href=\"/signup?next=confirm\">Sign up</a> \n" +
+            "    for an exclusive Beta.\n" +
+            "  </body>\n" +
+            "</html>")
     }
 );
+
+app.get('/signup', function (req, res) {
+    let next = req.query.next;
+    res.send('<!doctype html>\n' +
+        '<html>\n' +
+        '  <head>\n' +
+        '    <link rel="stylesheet" href="/static/game-frame-styles.css" />\n' +
+        '  </head>\n' +
+        ' \n' +
+        '  <body id="level5">\n' +
+        '    <img src="/static/logos/level5.png" /><br><br>\n' +
+        '    <!-- We\'re ignoring the email, but the poor user will never know! -->\n' +
+        '    Enter email: <input id="reader-email" name="email" value="">\n' +
+        ' \n' +
+        '    <br><br>\n' +
+        '    <a href="' + next + '">Next >></a>\n' +
+        '  </body>\n' +
+        '</html>')
+});
+app.get('/confirm', function (req, res) {
+    let next = req.query.next;
+    res.send('<!doctype html>\n' +
+        '<html>\n' +
+        '  <head>\n' +
+        '    <link rel="stylesheet" href="/static/game-frame-styles.css" />\n' +
+        '  </head>\n' +
+        ' \n' +
+        '  <body id="level5">\n' +
+        '    <img src="/static/logos/level5.png" /><br><br>\n' +
+        '    Thanks for signing up, you will be redirected soon...\n' +
+        '    <script>\n' +
+        '      setTimeout(function() { window.location = \'' + "/" + '\'; }, 5000);\n' +
+        '    </script>\n' +
+        '  </body>\n' +
+        '</html>')
+});
+
 
 app.listen(8000, () => console.log('Example app listening on port 8000!'));

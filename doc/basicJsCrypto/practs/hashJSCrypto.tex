@@ -22,7 +22,7 @@ How many possible hash digests are there in SHA256?
 \begin{enumerate}[1.]
 \item The code is the following: 
 
-\begin{lstlisting}[style=JavaScript]
+\begin{js}
 // import the nodejs standard library "crypto"
 const crypto = require('crypto');
 
@@ -38,7 +38,7 @@ print_hash("Bob owes me 900$");
 
 console.log("\nThere are " + Math.pow(2, 256) 
 + " possible sha256 outputs. Collisions are possible but very unlikely");
-\end{lstlisting}
+\end{js}
 \end{enumerate}
 \end{Answer}
 
@@ -54,7 +54,7 @@ In this exercise you will practice with the bcrypt algorithm for hashing passwor
 \begin{enumerate}[1.]
 \item Write a script that asks the user for a password, stores it in memory as a bcrypt, and then asks again for the password. The script has to compare both bcrypts and login the user. Use the \textit{bcrypt} library for Node.
 
-\begin{lstlisting}[style=JavaScript]
+\begin{js}
 bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
 // Store hash in your password DB.
 });
@@ -66,22 +66,22 @@ bcrypt.compare(myPlaintextPassword, hash, function(err, res) {
 bcrypt.compare(someOtherPlaintextPassword, hash, function(err, res) {
 // res == false
 });
-\end{lstlisting}
+\end{js}
 
 Use this snippet for making easy password prompts:
-\begin{lstlisting}[style=JavaScript]
+\begin{js}
 function ask_something(to_ask) {
-	return new Promise((resolve) => {
-		rl.question(to_ask, (answer) => {
-			resolve(answer);
-		});
-	});
+  return new Promise((resolve) => {
+    rl.question(to_ask, (answer) => {
+      resolve(answer);
+    });
+  });
 }
 
 async function main() {
-	const password = await ask_something('Write a password to be saved: ');
+  const password = await ask_something('Write a password to be saved: ');
 }
-\end{lstlisting}
+\end{js}
 \end{enumerate}
 \end{Exercise}
 
@@ -89,7 +89,7 @@ async function main() {
 \begin{enumerate}[1.]
 \item The code is the following: 
 
-\begin{lstlisting}[style=JavaScript]
+\begin{js}
 const bcrypt = require('bcrypt');
 const readline = require('readline')
 const rl = readline.createInterface(process.stdin, process.stdout);
@@ -129,6 +129,6 @@ async function main() {
 }
 
 main();
-\end{lstlisting}
+\end{js}
 \end{enumerate}
 \end{Answer}

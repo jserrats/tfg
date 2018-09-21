@@ -1,124 +1,133 @@
 
 \begin{Exercise}[label={websec-xss-types}]
-	\subsubsection{Stored XSS}
-	In this exercise we will practice finding vulnerabilities in a very basic web application.
-	
-	Run the following node code in your machine. Open a browser and go to http://localhost:8000. While looking at the source code and developer options of the browser, find a way to execute a alert() function. The alert() function makes the browser send a popup. For this exercise we will consider that if we can run an alert() the application is compromised.
-	
-	\begin{lstlisting}[style=JavaScript]
-	var express = require('express');
-	var bodyParser = require('body-parser');
-	var app = express();
+\subsubsection{Stored XSS}
+In this exercise we will practice finding vulnerabilities in a very basic web application.
 
-	app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
-	
-	db = [];
-	
-	app.get('/', function (req, res) {
-	list = "<ul>";
-	for (var i = 0; i < db.length; i++) {
-	list += "<li>" + db[i].user + " said: " + db[i].comment + "</li>"
-	}
-	list += "</ul>";
-	
-	res.send('<html>' +
-	'<head>' +
-	'<title>The cat forum</title>' +
-	'</head>' +
-	'<body>' +
-	"<h1>The Cat Forum. A place to talk about cats. </h1>" +
-	list +
-	"<form action=\"/comment\" method=\"POST\"><div><label>User</label><input type=\"text\" name=\"user\"/></div><div><label>Comment</label><input type=\"text\" name=\"comment\"/></div><div><input type=\"submit\" value=\"Post your comment\" size=\"100\"/></div></form>" +
-	'</body>' +
-	'</html>')
-	});
-	
-	app.post('/comment', function (req, res) {
-	db.push({comment: req.body.comment, user: req.body.user});
-	res.redirect("/");
-	});
-	
-	app.listen(8000, () => console.log('Listening on 8000'));
-	\end{lstlisting}
-	
-	\subsubsection{Reflected XSS}
-		Do the same with the following application. This may be more difficult than the previous exercises. Find information about the \textit{onerror} HTML tag to help you.
-	\begin{lstlisting}[style=JavaScript]
-	var express = require('express');
-	var app = express();
-	
-	db = {
-	"apples": 2,
-	"watermelons": 5,
-	"pineapples": 3
-	};
-	
-	app.get('/', function (req, res) {
-	res.send("<html><head>" +
-	"<title>Fruit stock tracker</title></head>" +
-	"<body><h1>Write the name of the fruit to know how many we have</h1>" +
-	"<div><form action=\"/search\" method=\"GET\">" +
-	"<input type=\"text\" name=\"searchquery\"/>" +
-	"<input type=\"submit\" value=\"Submit\"/>" +
-	"</form></div>" +
-	"</body></html>")
-	});
-	
-	
-	app.get('/search', function (req, res) {
-	var query = req.query.searchquery;
-	var result = db[query];
-	res.send('<html>' +
-	'<head>' +
-	'<title>Fruit stock tracker</title>' +
-	'</head>' +
-	'<body>' +
-	'We have ' + result + ' ' + query +
-	'</body>' +
-	'</html>')
-	});
-	app.listen(8000, () => console.log('Listening on 8000'));
-	\end{lstlisting}
-	
+Run the following node code in your machine. Open a browser and go to http://localhost:8000. While looking at the source code and developer options of the browser, find a way to execute a alert() function. The alert() function makes the browser send a popup. For this exercise we will consider that if we can run an alert() the application is compromised.
 
-	\subsubsection{DOM based XSS}
-		Do the same with this code. Remember to put the html in a file called 'index.html' in the same folder. This exercise is very similar to the reflected xss, but the important thing to understand is the difference between them.
-		\begin{lstlisting}[style=JavaScript]
-		const express = require('express');
-		var path = require('path');
-		const app = express();
-		
-		app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
-		
-		app.listen(8000, () => console.log('Example app listening on port 8000!'));
-		\end{lstlisting}
-		\begin{lstlisting}[style=JavaScript]
-			<!DOCTYPE html>
-			<html>9
-			<body>
-			
-			<form id="myForm">
-			What is your name?: <input type="text"><br>
-			</form>
-			<button onclick="getName()">Done</button>
-			<p id="output"></p>
-			
-			<script>
-			function getName(){
-			var x = document.getElementById("myForm").elements[0].value;
-			document.getElementById("output").innerHTML = "Hello, " + x;
-			}
-			</script>
-			
-			</body>
-			</html>
-		\end{lstlisting}
+\begin{js}
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+
+app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
+
+db = [];
+
+app.get('/', function (req, res) {
+list = "<ul>";
+for (var i = 0; i < db.length; i++) {
+  list += "<li>" + db[i].user + " said: " + db[i].comment + "</li>"
+  }
+list += "</ul>";
+
+res.send('<html>' +
+  '<head>' +
+  '<title>The cat forum</title>' +
+  '</head>' +
+  '<body>' +
+  "<h1>The Cat Forum. A place to talk about cats. </h1>" +
+  list +
+  "<form action=\"/comment\" method=\"POST\"><div><label>User</label><input type=\"text\" name=\"user\"/></div><div><label>Comment</label><input type=\"text\" name=\"comment\"/></div><div><input type=\"submit\" value=\"Post your comment\" size=\"100\"/></div></form>" +
+  '</body>' +
+  '</html>')
+});
+
+app.post('/comment', function (req, res) {
+  db.push({comment: req.body.comment, user: req.body.user});
+  res.redirect("/");
+});
+
+app.listen(8000, () => console.log('Listening on 8000'));
+\end{js}
+
+\subsubsection{Reflected XSS}
+Do the same with the following application. This may be more difficult than the previous exercises. Find information about the \textit{onerror} HTML tag to help you.
+\begin{js}
+var express = require('express');
+var app = express();
+
+db = {
+  "apples": 2,
+  "watermelons": 5,
+  "pineapples": 3
+};
+
+app.get('/', function (req, res) {
+  res.send("<html><head>" +
+  "<title>Fruit stock tracker</title></head>" +
+  "<body><h1>Write the name of the fruit to know how many we have</h1>" +
+  "<div><form action=\"/search\" method=\"GET\">" +
+  "<input type=\"text\" name=\"searchquery\"/>" +
+  "<input type=\"submit\" value=\"Submit\"/>" +
+  "</form></div>" +
+  "</body></html>")
+});
+
+
+app.get('/search', function (req, res) {
+  var query = req.query.searchquery;
+  var result = db[query];
+  res.send('<html>' +
+    '<head>' +
+      '<title>Fruit stock tracker</title>' +
+      '</head>' +
+      '<body>' +
+      'We have ' + result + ' ' + query +
+      '</body>' +
+    '</html>')
+});
+app.listen(8000, () => console.log('Listening on 8000'));
+\end{js}
+
+
+\subsubsection{DOM based XSS}
+Do the same with this code. Remember to put the html in a file called 'index.html' in the same folder. This exercise is very similar to the reflected xss, but the important thing to understand is the difference between them.
+\begin{js}
+const express = require('express');
+var path = require('path');
+const app = express();
+
+app.get('/', (req, res) => res.sendFile(path.join(__dirname + '/index.html')));
+
+app.listen(8000, () => console.log('Example app listening on port 8000!'));
+\end{js}
+\begin{html}
+<!DOCTYPE html>
+<html>
+  <body>
+  <form id="myForm">
+  What is your name?: <input type="text"><br>
+  </form>
+  <button onclick="getName()">Done</button>
+  <p id="output"></p>
+  
+  <script>
+    function getName(){
+      var x = document.getElementById("myForm").elements[0].value;
+      document.getElementById("output").innerHTML = "Hello, " + x;
+    }
+  </script>
+  
+  </body>
+</html>
+\end{html}
 \end{Exercise}
 \begin{Answer}[ref={websec-xss-types}]
-	\subsubsection{Stored XSS}
-	Due to the fact that the application does not have any kind of XSS protection, the injection is as easy as typing <script>alert()</script> in any of the form fields. The next user that loads the comments will be affected by this XSS.
-	\subsubsection{Reflected XSS}
-	As we can see, the code parses the GET request parameters directly into the application. To trigger an alert() we only would have to send the victim an URL like: http://localhost:8000/search?searchquery=<script>alert()</script>
-	\subsubsection{DOM based XSS}
-	This time, writing a simple <script>alert()</script> into the form wont't work, because script tags are only processed by the browser when loading the page. To run a js code we can use the onerror tag like this: <img src="image.gif" onerror="alert()">
+\subsubsection{Stored XSS}
+Due to the fact that the application does not have any kind of XSS protection, the injection is as easy as typing 
+\begin{html}
+<script>alert()</script>
+\end{html}
+in any of the form fields. The next user that loads the comments will be affected by this XSS.
+\subsubsection{Reflected XSS}
+As we can see, the code parses the GET request parameters directly into the application. To trigger an alert() we only would have to send the victim an URL like: \url{http://localhost:8000/search?searchquery=<script>alert()</script>}
+\subsubsection{DOM based XSS}
+This time, writing a simple \begin{html}
+<script>alert()</script>
+\end{html}
+into the form wont't work, because script tags are only processed by the browser when loading the page. To run a js code we can use the onerror tag like this:
+\begin{html}
+<img src="image.gif" onerror="alert()">
+\end{html}
 \end{Answer}

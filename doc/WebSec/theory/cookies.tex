@@ -3,7 +3,7 @@ A HTTP cookie is a small piece of data that a server sends to the user's web bro
 
 \subsection{Creating cookies}
 To set a cookie, the server must respond to a HTTP request with the following header:
-\begin{verbatim}
+\begin{lstlisting}[style=verbs]
 Set-Cookie: <cookie-name>=<cookie-value>
 
 HTTP/1.0 200 OK
@@ -12,36 +12,36 @@ Set-Cookie: yummy_cookie=choco
 Set-Cookie: tasty_cookie=strawberry
 
 [page content]
-\end{verbatim}
+\end{lstlisting}
 Now, with every new request to the server, the browser will send back all previously stored cookies to the server using the Cookie header.
 
-\begin{verbatim}
+\begin{lstlisting}[style=verbs]
 GET /sample_page.html HTTP/1.1
 Host: www.example.org
 Cookie: yummy_cookie=choco; tasty_cookie=strawberry
-\end{verbatim}
+\end{lstlisting}
 If we don't specify any expire date, the browser will delete the cookies when is closed. Those are called Session cookies. Instead of expiring when the client closes, permanent cookies expire at a specific date (Expires) or after a specific length of time (Max-Age).
-\begin{verbatim}
+\begin{lstlisting}[style=verbs]
 Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT;
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Secure and HttpOnly cookies}
 The Secure flag indicates the browser that it should only send the cookie over HTTPS, never HTTP. The HttpOnly flag makes the cookie inaccessible to JS using Document.cookie. This is done to prevent XSS attacks
-\begin{verbatim}
+\begin{lstlisting}[style=verbs]
 Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Secure; HttpOnly
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Scope of cookies}
 The Domain and Path directives define the scope of the cookie: what URLs the cookies should be sent to.
 Domain specifies allowed hosts to receive the cookie. If unspecified, it defaults to the host of the current document location, excluding subdomains. If Domain is specified, then subdomains are always included.
-For example, if \verb|domain=mozilla.org| is set, then cookies are included on subdomains like \verb|developer.mozilla.org.|
+For example, if \textbf{domain=mozilla.org} is set, then cookies are included on subdomains like \textbf{developer.mozilla.org}
 Path indicates a URL path that must exist in the requested URL in order to send the Cookie header. The \%x2F ("/") character is considered a directory separator, and subdirectories will match as well.
 For example, if Path=/docs is set, the following paths will match:
 
-\begin{verbatim}
+\begin{lstlisting}[style=verbs]
 /docs
 /docs/Web/
 /docs/Web/HTTP
-\end{verbatim}
+\end{lstlisting}
 
 

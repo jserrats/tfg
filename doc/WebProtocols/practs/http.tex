@@ -1,5 +1,5 @@
 \begin{Exercise}[label={webprotocols-http-practs}]
-In this exercise we will use Wireshark to see how easy it is to sniff http. In order to simplify the excercise we'll run the packet sniffer locally and we'll inspect our own requests, but it is important to know that the same results could be achieved if the packet inspector was installed in any router in the chain. In our example we'll use example.net, but any site that still accepts http  is valid.
+In this exercise we will use Wireshark to see how easy it is to sniff http. In order to simplify the excercise we'll run the packet sniffer locally and we'll inspect our own requests, but it is important to know that the same results could be achieved if the packet inspector was installed in any router in the chain. In our example we'll use \url{example.net}, but any site that still accepts http  is valid.
 
 
 Start wireshark and capture on the interface that connects to WAN using the filter \textbf{port 80}, and the visualization filter \textbf{http}. This way we'll only capture the traffic related to http, and only display the request themselves at application level, and not the TCP traffic at transport level.
@@ -38,5 +38,3 @@ Select the blue text that corresponds to the server response, paste it into the 
 
 \begin{Answer}[ref={webprotocols-http-practs}]
 \end{Answer}
-
-If HSTS was enabled on this domain, the browser would refuse to connect 

@@ -1,117 +1,118 @@
 \begin{Exercise}[label={websec-xss-prevention}]
-	Modify the source code of all three of the previous exercises so they are no longer vulnerable to a basic attack. You can use an external node library to help you.
-	
-	\subsubsection{Reflected XSS}
-	Find a way to block possible javascript injections, but whithout removing characters or combination of characters (We don't want to restrain our users the possibility to search for \textbf{<script>} for example.)
-	\subsubsection{Stored XSS}
-	Find a solution that allows the users to format their posts with HTML (headers, paragraphs, etc) but is secure against XSS. Which html tags can be used maliciously? Which ones are safe to allow?
-	\subsubsection{DOM based XSS}
-	There is a simple function in js that allows to insert text safely into html.
+Modify the source code of all three of the previous exercises so they are no longer vulnerable to a basic attack. You can use an external node library to help you.
+
+\subsubsection{Reflected XSS}
+Find a way to block possible javascript injections, but whithout removing characters or combination of characters (We don't want to restrain our users the possibility to search for \textbf{<script>} for example.)
+\subsubsection{Stored XSS}
+Find a solution that allows the users to format their posts with HTML (headers, paragraphs, etc) but is secure against XSS. Which html tags can be used maliciously? Which ones are safe to allow?
+\subsubsection{DOM based XSS}
+There is a simple function in js that allows to insert text safely into html.
 \end{Exercise}
 
 \begin{Answer}[ref={websec-xss-prevention}]
-	The following are the proposed solutions for securing the application. Keep in mind that this solutions aren't unique.
-	
-	\subsubsection{Reflected XSS}
-	Since we don't need to allow any kind of code or html tag, encoding is the best approach. Using the library htmlencode, we encode the parameter searchquery before passing it to the browser. Now when we try to do <script>alert()</script>, the browser will display that instead of executing it.
-		\begin{lstlisting}[style=JavaScript]
-		var express = require('express');
-		var htmlencode = require('htmlencode');
-		var app = express();
-		
-		db = {
-		"apples": 2,
-		"watermelons": 5,
-		"pineapples": 3
-		};
-		
-		app.get('/', function (req, res) {
-		res.send("<html><head>" +
-		"<title>Fruit stock tracker</title></head>" +
-		"<body><h1>Write the name of the fruit to know how many we have</h1>" +
-		"<div><form action=\"/search\" method=\"GET\">" +
-		"<input type=\"text\" name=\"searchquery\"/>" +
-		"<input type=\"submit\" value=\"Submit\"/>" +
-		"</form></div>" +
-		"</body></html>")
-		});
-		
-		
-		app.get('/search', function (req, res) {
-		var query = req.query.searchquery;
-		var result = db[query];
-		res.send('<html>' +
-		'<head>' +
-		'<title>Fruit stock tracker</title>' +
-		'</head>' +
-		'<body>' +
-		'We have ' + result + ' ' + htmlencode.htmlEncode(query) +
-		'</body>' +
-		'</html>')
-		});
-		app.listen(8000, () => console.log('Listening on 8000'));
-		\end{lstlisting}
-	\subsubsection{Stored XSS}
-		Using the library \textbf{sanitize-html}, or any similar, we can parse the user input in order to remove the potentially malicious tags. Remember that is safer to whitelist the safe tags, than to blacklist the unsafe ones.
-		\begin{lstlisting}[style=JavaScript]
-		var express = require('express');
-		var bodyParser = require('body-parser');
-		var sanitizeHtml = require('sanitize-html');
-		
-		var app = express();
-		
-		app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
-		
-		db = [];
-		
-		app.get('/', function (req, res) {
-		list = "<ul>";
-		for (var i = 0; i < db.length; i++) {
-		list += "<li>" + sanitizeHtml(db[i].user) + " said: " + sanitizeHtml(db[i].comment, {
-		allowedTags: ['b', 'i', 'em', 'strong', 'h1']
-		}) + "</li>"
-		}
-		list += "</ul>";
-		
-		res.send('<html>' +
-		'<head>' +
-		'<title>The cat forum</title>' +
-		'</head>' +
-		'<body>' +
-		"<h1>The Cat Forum. A place to talk about cats. </h1>" +
-		list +
-		"<form action=\"/comment\" method=\"POST\"><div><label>User</label><input type=\"text\" name=\"user\"/></div><div><label>Comment</label><input type=\"text\" name=\"comment\"/></div><div><input type=\"submit\" value=\"Post your comment\" size=\"100\"/></div></form>" +
-		'</body>' +
-		'</html>')
-		});
-		
-		app.post('/comment', function (req, res) {
-		db.push({comment: req.body.comment, user: req.body.user});
-		res.redirect("/");
-		});
-		
-		app.listen(8000, () => console.log('Listening on 8000'));
-		\end{lstlisting}
-	\subsubsection{DOM based XSS}
-	The solution is as easy as changing the .innerHTML method for .textContent. As we have seen the method textContent does input validation.
-	\begin{lstlisting}[style=JavaScript]<!DOCTYPE html>
-	<html>
-	<body>
-	
-	<form id="myForm">
-	What is your name?: <input type="text"><br>
-	</form>
-	<button onclick="getName()">Done</button>
-	<p id="output"></p>
-	
-	<script>
-	function getName(){
-	var x = document.getElementById("myForm").elements[0].value;
-	document.getElementById("output").textContent = "Hello, " + x;
-	}
-	</script>
-	
-	</body>
-	</html>
-	\end{lstlisting}
+The following are the proposed solutions for securing the application. Keep in mind that this solutions aren't unique.
+
+\subsubsection{Reflected XSS}
+Since we don't need to allow any kind of code or html tag, encoding is the best approach. Using the library htmlencode, we encode the parameter searchquery before passing it to the browser. Now when we try to do <script>alert()</script>, the browser will display that instead of executing it.
+\begin{js}
+var express = require('express');
+var htmlencode = require('htmlencode');
+var app = express();
+
+db = {
+  "apples": 2,
+  "watermelons": 5,
+  "pineapples": 3
+};
+
+app.get('/', function (req, res) {
+  res.send("<html><head>" +
+  "<title>Fruit stock tracker</title></head>" +
+  "<body><h1>Write the name of the fruit to know how many we have</h1>" +
+  "<div><form action=\"/search\" method=\"GET\">" +
+  "<input type=\"text\" name=\"searchquery\"/>" +
+  "<input type=\"submit\" value=\"Submit\"/>" +
+  "</form></div>" +
+  "</body></html>")
+});
+
+
+app.get('/search', function (req, res) {
+  var query = req.query.searchquery;
+  var result = db[query];
+  res.send('<html>' +
+  '<head>' +
+  '<title>Fruit stock tracker</title>' +
+  '</head>' +
+  '<body>' +
+  'We have ' + result + ' ' + htmlencode.htmlEncode(query) +
+  '</body>' +
+  '</html>')
+});
+app.listen(8000, () => console.log('Listening on 8000'));
+\end{js}
+\subsubsection{Stored XSS}
+Using the library \textbf{sanitize-html}, or any similar, we can parse the user input in order to remove the potentially malicious tags. Remember that is safer to whitelist the safe tags, than to blacklist the unsafe ones.
+\begin{js}
+var express = require('express');
+var bodyParser = require('body-parser');
+var sanitizeHtml = require('sanitize-html');
+
+var app = express();
+
+app.use(bodyParser.urlencoded({extended: true})); // for parsing application/x-www-form-urlencoded
+
+db = [];
+
+app.get('/', function (req, res) {
+  list = "<ul>";
+  for (var i = 0; i < db.length; i++) {
+    list += "<li>" + sanitizeHtml(db[i].user) + " said: " + sanitizeHtml(db[i].comment, {
+      allowedTags: ['b', 'i', 'em', 'strong', 'h1']
+    }) + "</li>"
+  }
+  list += "</ul>";
+  
+  res.send('<html>' +
+    '<head>' +
+    '<title>The cat forum</title>' +
+    '</head>' +
+    '<body>' +
+    "<h1>The Cat Forum. A place to talk about cats. </h1>" +
+    list +
+    "<form action=\"/comment\" method=\"POST\"><div><label>User</label><input type=\"text\" name=\"user\"/></div><div><label>Comment</label><input type=\"text\" name=\"comment\"/></div><div><input type=\"submit\" value=\"Post your comment\" size=\"100\"/></div></form>" +
+    '</body>' +
+  '</html>')
+});
+
+app.post('/comment', function (req, res) {
+  db.push({comment: req.body.comment, user: req.body.user});
+  res.redirect("/");
+});
+
+app.listen(8000, () => console.log('Listening on 8000'));
+\end{js}
+\subsubsection{DOM based XSS}
+The solution is as easy as changing the .innerHTML method for .textContent. As we have seen the method textContent does input validation.
+\begin{js}
+<!DOCTYPE html>
+<html>
+<body>
+
+  <form id="myForm">
+    What is your name?: <input type="text"><br>
+  </form>
+  <button onclick="getName()">Done</button>
+  <p id="output"></p>
+  
+  <script>
+  function getName(){
+    var x = document.getElementById("myForm").elements[0].value;
+    document.getElementById("output").textContent = "Hello, " + x;
+  }
+  </script>
+
+</body>
+</html>
+\end{js}
 \end{Answer}

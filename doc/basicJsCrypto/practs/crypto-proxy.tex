@@ -19,7 +19,7 @@ Finally, the remote socket recieves the encrypted data, and deciphers it. In our
 
 To run the experiment we are going to need three different terminals.
 
-\begin{lstlisting}
+\begin{lstlisting}[style=terms]
 $ nodejs decrypt_server.js
 $ nodejs crypto_proxy.js
 $ nc localhost 1234
@@ -30,7 +30,7 @@ If we use wireshark we can see that the first connection is in clear text, while
 
 For the next part, we are going to send a picture through the proxy. To do this, execute netcat with a pipe where Tux.png is the picture to send.
 
-\begin{lstlisting}
+\begin{lstlisting}[style=terms]
 $ cat Tux.png | nc localhost 1234
 \end{lstlisting}
 
@@ -47,8 +47,8 @@ If we capture this traffic with wireshark, then select the option "Follow TCP St
 	\item Improve the proxy and the server so full duplex encrypted conection is possible.
 \end{enumerate}
 
-\begin{lstlisting}[style=JavaScript]
-\\crypto_proxy.js  
+\begin{js}
+//crypto proxy.js
 const net = require('net');
 const crypto = require('crypto');
 
@@ -67,11 +67,11 @@ source = net.createServer(function (socket) {
     // the output of the listening socket is piped to the cipher input, and the output of the cipher is sent to the server.
     socket.pipe(cipher).pipe(destination);
 }).listen(1234);
-\end{lstlisting}
+\end{js}
 
 
-\begin{lstlisting}[style=JavaScript]
-\\decrypt_server.js
+\begin{js}
+// decrypt server.js
 const net = require('net');
 const crypto = require('crypto');
 const fs = require('fs');
@@ -91,4 +91,4 @@ net.createServer(function (sock) {
         console.log("Message received.")
     });
 }).listen(5678);
-\end{lstlisting}
+\end{js}

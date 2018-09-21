@@ -30,15 +30,27 @@ In every web application there are many places where malicious js can be inserte
 	\end{tabular}
 \end{table}
 
-For example, if we had a HTML element input  and we want to break context, we could insert something like \verb|</div><script>...</script><div>| so the resulting HTML would be valid (\verb|<div></div><script>...</script><div></div>|). The closing division tag lets us insert whatever we want inside, so the obvious thing to do in order to protect the input would be to ban them. In another case \verb|<input value="userInput">|, that would not work because the browser will parse everything that gets between quotes as a text. In this case, the approach to attacking is closing the value field, and then insert the payload (\verb|"><script>...</script><input value="|). It's important to know in wich context we are so it is correctly protected.
+For example, if we had a HTML element input  and we want to break context, we could insert something like 
+\begin{html}
+</div><script> maliciousJS() </script><div> 
+\end{html}
+so the resulting HTML would be valid 
+\begin{html}
+<div></div><script> maliciousJS() </script><div></div>
+\end{html}
+The closing division tag lets us insert whatever we want inside, so the obvious thing to do in order to protect the input would be to ban them. In another case 
+\begin{html}<input value="userInput">\end{html}
+that would not work because the browser will parse everything that gets between quotes as a text. In this case, the approach to attacking is closing the value field, and then insert the payload
+\begin{html}"><script>...</script><input value="\end{html}
+It's important to know in which context we are so it is correctly protected.
 
 \subsubsection{Inbound/Outbound}
 The input sanitation can be done when the data arrives at the application, or when it is sent to the browser. As we've seen, depending on the input context the validation and/or encoding has to be done differently. When the input arrives at the application we don't know in which context is going to be inserted, so protections can't be applied efficiently.
 
 \subsubsection{Encoding}
-Encoding consists of escaping the input received so the browser does not interpret it as code to be executed. In a HTML environment typically we will encode the characters \textbf{<, >} into \textbf{\&lt; and \&gt;}. If we tried to insert a code like \verb|<script> ... </script>| it would become \verb|&lt;script&gt;...&lt;/script&gt;| thus rendering it inofensive. When the browser finds this translates the encoded characters and then displays them, but without executing it.
+Encoding consists of escaping the input received so the browser does not interpret it as code to be executed. In a HTML environment typically we will encode the characters \textbf{<, >} into \textbf{\&lt; and \&gt;}. If we tried to insert a code like \begin{html}<script> ... </script>\end{html} it would become \begin{html}&lt;script&gt;...&lt;/script&gt;\end{html} thus rendering it inoffensive. When the browser finds this translates the encoded characters and then displays them, but without executing it.
 
-Encoding can be done on the back-end by using the methods of the chosen programing language. In the front-end we will be using js and it's built-in methods to encode properly in each context.
+Encoding can be done on the back-end by using the methods of the chosen programming language. In the front-end we will be using js and it's built-in methods to encode properly in each context.
 
 \begin{table}[]
 	\centering
@@ -57,9 +69,9 @@ Encoding can be done on the back-end by using the methods of the chosen programi
 However, encoding is not perfect. Sometimes we may want to allow some html in the user input (a forum where the users can apply format to the posts for example) and if we encode everything, it would be displayed as plain text and wouldn't work. Also sometimes encoding can't protect the application from other attacks, like inserting a valid URL beginning in "javascript:" + javascript function. This is a valid URL that tells the browser that the following has to be interpreted using js. As you can see, this is a attack vector to insert malicious js, but because we don't use html tags, the encoding can't protect it.
 
 \subsubsection{Validation}
-Validation consists in removing the malicious parts of a user input. If we are validating an input that has some html tags, we can allow those that are inoffensive like <p>, but filtering others like <script>.
+Validation consists in removing the malicious parts of a user input. If we are validating an input that has some html tags, we can allow those that are inoffensive like\textbf{ <p>}, but filtering others like \textbf{<script>}.
 
-When it comes to classification of the input, it is recommended to apply a whitelist approach. White listing consists of having a list of allowed patterns, and everything else that is not found in the white list gets flagged as malicious. This is much more secure than blacklisting, because there are many variations of a simple exploit and we should blacklist all of them to be safe. Also, as technologies evolve, our blacklist may be outdated every time a new version of html or js is released. 
+When it comes to classification of the input, it is recommended to apply a whitelist approach. White listing consists of having a list of allowed patterns, and everything else that is not found in the white list gets flagged as malicious. This is much more secure than blacklisting, because there are many variations of a simple exploit and we should blacklist all of them to be safe. Also, as technologies evolve, our blacklist may be outdated every time a new version of HTML or js is released. 
 
 When a user input has been analyzed, we have two different approaches.
 

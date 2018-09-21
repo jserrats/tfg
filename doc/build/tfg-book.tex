@@ -1,4 +1,33 @@
-%TODO
+% !TeX TXS-program:compile = txs:///xelatex/[--shell-escape]
+%%%%% !TeX TXS-program:compile = txs:///pdflatex/[--shell-escape]
+% !TeX spellcheck = en_GB
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% What I need to compile:   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% sudo apt install texlive-xetex texlive-latex-extra texlive-generic-extra
+% sudo apt install python-pip
+% pip install pygments pygments-lexer-babylon pygments-lexer-solidity
+
+% ---> IMPORTANT <---
+% This file should be compiled with XeTeX (http://xetex.sourceforge.net/)
+% because using Unicode and modern font files is infinitely easier
+% ---> IMPORTANT <---
+
+%iosevka font (not used now)
+%get: https://github.com/be5invis/Iosevka/releases/download/v2.0.0/02-iosevka-term-2.0.0.zip
+
+%Fira font (currently used):
+% https://github.com/mozilla/Fira/releases/tag/4.202
+% wget https://github.com/mozilla/Fira/archive/4.202.zip
+% unzip 4.202.zip
+% cd Fira-4.202
+% sudo mkdir -p /usr/share/fonts/opentype/fira
+% sudo mkdir -p /usr/share/fonts/truetype/fira
+% sudo find . -name "*.otf" -exec cp {} /usr/share/fonts/opentype/fira/ \;
+% sudo find . -name "*.ttf" -exec cp {} /usr/share/fonts/truetype/fira/ \;
+% sudo fc-cache -fv
 
 \documentclass[english,10pt]{book}
 
@@ -25,6 +54,164 @@
 \usepackage{paralist}
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{url}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BEGIN Code Highlighting Environments %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%sudo apt install texlive-latex-extra 
+%sudo apt install python-pip
+%pip install pygments
+%pip install pygments-lexer-babylon  #contains JSX
+%pip install pygments-lexer-solidity 
+
+%pip install pygments pygments-lexer-babylon pygments-lexer-solidity
+
+
+
+\usepackage{tcolorbox}
+\tcbuselibrary{minted,skins,listings}
+\definecolor{mybg}{rgb}{0.96,0.96,0.98}
+
+\newtcblisting{js}{
+	listing engine=minted,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	minted style=tango,
+	minted language=js,
+	minted options={linenos=true,texcl=true,fontsize=\footnotesize},
+	left=0.2mm,
+	top=0cm,
+	bottom=0cm,
+}
+
+\newtcblisting{mytext}{
+	listing engine=minted,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	minted style=bw,
+	minted language=text,
+	minted options={linenos=true,texcl=true,fontsize=\tiny},
+	left=0.2mm,
+	top=0cm,
+	bottom=0cm,
+}
+
+\newtcblisting{htmlng2}{
+	listing engine=minted,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	minted style=tango,
+	minted language=html+ng2,
+	minted options={linenos=true,texcl=true,fontsize=\tiny},
+	left=0.2mm,
+	top=0cm,
+	bottom=0cm,
+}
+
+\newtcblisting{jsx}{
+	listing engine=minted,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	minted style=tango,
+	minted language=jsx,
+	minted options={linenos=true,texcl=true,fontsize=\tiny},
+	left=0.2mm,
+	top=0cm,
+	bottom=0cm,
+}
+
+\newtcblisting{html}{
+	listing engine=minted,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	minted style=tango,
+	minted language=html,
+	minted options={linenos=true,texcl=true,fontsize=\footnotesize},
+	left=0.2mm,
+	top=0cm,
+	bottom=0cm,
+}
+
+\newtcblisting{css}{
+	listing engine=minted,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	minted style=tango,
+	minted language=css,
+	minted options={linenos=true,texcl=true,fontsize=\tiny},
+	left=0.2mm,
+	top=0cm,
+	bottom=0cm,
+}
+
+\newtcblisting{solidity}{
+	listing engine=minted,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	minted style=tango,
+	minted language=solidity,
+	minted options={linenos=true,texcl=true,fontsize=\tiny},
+	left=0.2mm,
+	top=0cm,
+	bottom=0cm,
+}
+
+
+% Another version of solidity (not used)
+
+\lstdefinelanguage{Solidity}{
+	keywords=[1]{anonymous, assembly, assert, balance, break, call, callcode, case, catch, class, constant, continue, contract, debugger, default, delegatecall, delete, do, else, event, export, external, false, finally, for, function, gas, if, implements, import, in, indexed, instanceof, interface, internal, is, length, library, log0, log1, log2, log3, log4, memory, modifier, new, payable, pragma, private, protected, public, pure, push, require, return, returns, revert, selfdestruct, send, storage, struct, suicide, super, switch, then, this, throw, transfer, true, try, typeof, using, value, view, while, with, addmod, ecrecover, keccak256, mulmod, ripemd160, sha256, sha3}, % generic keywords including crypto operations
+	keywordstyle=[1]\color{blue}\bfseries,
+	keywords=[2]{address, bool, byte, bytes, bytes1, bytes2, bytes3, bytes4, bytes5, bytes6, bytes7, bytes8, bytes9, bytes10, bytes11, bytes12, bytes13, bytes14, bytes15, bytes16, bytes17, bytes18, bytes19, bytes20, bytes21, bytes22, bytes23, bytes24, bytes25, bytes26, bytes27, bytes28, bytes29, bytes30, bytes31, bytes32, enum, int, int8, int16, int24, int32, int40, int48, int56, int64, int72, int80, int88, int96, int104, int112, int120, int128, int136, int144, int152, int160, int168, int176, int184, int192, int200, int208, int216, int224, int232, int240, int248, int256, mapping, string, uint, uint8, uint16, uint24, uint32, uint40, uint48, uint56, uint64, uint72, uint80, uint88, uint96, uint104, uint112, uint120, uint128, uint136, uint144, uint152, uint160, uint168, uint176, uint184, uint192, uint200, uint208, uint216, uint224, uint232, uint240, uint248, uint256, var, void, ether, finney, szabo, wei, days, hours, minutes, seconds, weeks, years},	% types; money and time units
+	keywordstyle=[2]\color{teal}\bfseries,
+	keywords=[3]{block, blockhash, coinbase, difficulty, gaslimit, number, timestamp, msg, data, gas, sender, sig, value, now, tx, gasprice, origin},	% environment variables
+	keywordstyle=[3]\color{violet}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{gray}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
+}
+
+\newtcblisting{sol}{
+	listing engine=listings,
+	colback=mybg,
+	colframe=black!70,
+	listing only,
+	listing options={
+		language={Solidity},
+		basicstyle=\tiny\ttfamily,
+		frame=none,
+		numbers=left,
+		numberstyle=\tiny,
+		numbersep=9pt,
+		tabsize=2,
+		breaklines=true,
+		showtabs=false,
+		captionpos=b
+	},
+	left=0.2mm,
+	top=-0.2cm,
+	bottom=-0.2cm,
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% END   Code Highlighting Environments %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \usepackage{showexpl}% already includes listings package
 % The listings package defines an internal command for replacements within filenames. 
 % One of these replacements replaces - with \textendash. 
@@ -33,50 +220,60 @@
 \def\lst@filenamerpl{_\textunderscore $\textdollar}
 \makeatother
 \lstset{frame=shadowbox, basicstyle=\footnotesize\ttfamily, showstringspaces=false,
-rulesepcolor=\color{black}, upquote=true}
+	rulesepcolor=\color{black}, upquote=true}
 % \lstset{language=bash, frame=shadowbox, basicstyle=\footnotesize, showstringspaces=false,
 % rulesepcolor=\color{black}, upquote=true, }
 \lstdefinestyle{scriptStyle}{
-    basicstyle=\footnotesize,% control font of code
-    preset=\footnotesize,% adjust font size of output
-    numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt,
-    frame=tlbr,
-    pos=r,% want output on right
-%     backgroundcolor=\color{yellow!30},
-    width=0.50\linewidth,
-}
-\lstdefinestyle{verb}{
-    basicstyle=\footnotesize,% control font of code
-    preset=\footnotesize,% adjust font size of output
-    frame=tlbr,
-    pos=r,% want output on right
-%     backgroundcolor=\color{yellow!30},
-    width=0.50\linewidth,
+	basicstyle=\footnotesize,% control font of code
+	preset=\footnotesize,% adjust font size of output
+	numbers=left, numberstyle=\tiny, stepnumber=1, numbersep=5pt,
+	frame=tlbr,
+	pos=r,% want output on right
+	%     backgroundcolor=\color{yellow!30},
+	width=0.50\linewidth,
 }
 
-\definecolor{gray}{rgb}{0.4,0.4,0.4}
-\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
-\definecolor{cyan}{rgb}{0.0,0.6,0.6}
-\lstdefinestyle{vnuml}{
-    language=XML,
-    basicstyle=\footnotesize,% control font of code
-    preset=\footnotesize,% adjust font size of output
-    frame=tlbr,
-    pos=r,% want output on right
-%   backgroundcolor=\color{yellow!30},
-   width=0.50\linewidth,
-     columns=fullflexible,
-  showstringspaces=false,
-  commentstyle=\color{gray}\upshape,
-  stringstyle=\color{black},
-  keywordstyle=\color{darkblue},
-  %keywordstyle=\color{cyan},
-  morekeywords={vnuml,if,vm,version,simulation_name,global,automac,vm_mgmt,vm_defaults,
-  filesystem,kernel,console,net,ipv4,route,forwarding,exec,filetree,basedir,
-  shell,mem,ipv6,host,ssh_version,ssh_key,netconfig,tun_device,mng_if,xterm,user},
-  emph={type,id,name,mode,mask,seq,exec_mode,root},
-  emphstyle=\color{cyan}
-   }
+\lstdefinestyle{terms}{
+	basicstyle=\scriptsize\ttfamily,% control font of code
+	preset=\footnotesize,% adjust font size of output
+}
+
+\lstdefinestyle{termt}{
+	basicstyle=\tiny\ttfamily,% control font of code
+	preset=\footnotesize,% adjust font size of output
+}
+
+\lstdefinestyle{verb}{
+	basicstyle=\footnotesize,% control font of code
+	preset=\footnotesize,% adjust font size of output
+	frame=tlbr,
+	pos=r,% want output on right
+	%     backgroundcolor=\color{yellow!30},
+	width=0.50\linewidth,
+}
+
+\lstdefinestyle{verbs}{
+	basicstyle=\scriptsize,% control font of code
+	preset=\scriptsize,% adjust font size of output
+	frame=tlbr,
+	pos=r,% want output on right
+	%     backgroundcolor=\color{yellow!30},
+	width=0.50\linewidth,
+}
+
+\lstdefinestyle{verbt}{
+	basicstyle=\tiny\ttfamily,% control font of code
+	preset=\tiny\ttfamily,% adjust font size of output
+	frame=tlbr,
+	pos=r,% want output on right
+	%     backgroundcolor=\color{yellow!30},
+	width=0.50\linewidth,
+}
+
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % BEGIN Javascript!!!!! %
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,7 +395,7 @@ rulesepcolor=\color{black}, upquote=true}
 \usepackage{float}
 \floatstyle{plain} % optionally change the style of the new float
 \newfloat{Code}{H}{myc}[chapter]
-\pdfminorversion=8
+%\pdfminorversion=8
 %Labtel2/UPC style
 % \usepackage{labtel2}
 % \usepackage{UPC}
@@ -209,9 +406,9 @@ rulesepcolor=\color{black}, upquote=true}
 %Exercise package
 \usepackage[answerdelayed]{exercise}
 \renewcommand{\ExerciseHeader}{\raggedright{\textbf{\ExerciseName\ExerciseHeaderNB
--- \ExerciseHeaderTitle\ExerciseHeaderOrigin}}}
+			-- \ExerciseHeaderTitle\ExerciseHeaderOrigin}}}
 \renewcommand{\AnswerHeader}{\medskip{\textbf{\ExerciseName\
-\ExerciseHeaderNB}\smallskip}\\}
+			\ExerciseHeaderNB}\smallskip}\\}
 \renewcommand{\ExerciseName}{Exercise}
 % Number exercises with chapter numbers.
 \renewcounter{Exercise}[chapter]% Reset counter every chapter
@@ -219,18 +416,18 @@ rulesepcolor=\color{black}, upquote=true}
 
 %Shadowbox environment for notes JAD
 \newenvironment{shadowbox}[1]%
-  {
-  ~\\[-0.5in]%
-  \setlength\fboxsep{4pt}%
-  \definecolor{shadecolor}{rgb}{0.8,0.8,0.8}%
-  \begin{shaded}%
-  \addtolength{\hsize}{-0.10\columnwidth}%
-  {#1\\}
-  }
-  {
-  \end{shaded}%
-  \par
-  }
+{
+	~\\[-0.5in]%
+	\setlength\fboxsep{4pt}%
+	\definecolor{shadecolor}{rgb}{0.8,0.8,0.8}%
+	\begin{shaded}%
+	\addtolength{\hsize}{-0.10\columnwidth}%
+	{#1\\}
+}
+{
+	\end{shaded}%
+	\par
+}
 %End Shadowbox environment for notes
 
 %Directory definitions for .tex inputs
@@ -242,33 +439,33 @@ rulesepcolor=\color{black}, upquote=true}
 
 %Front cover page
 \AtBeginDocument{
-  \def\labelitemiii{\normalfont\bfseries{--}}
+	\def\labelitemiii{\normalfont\bfseries{--}}
 }
 \makeatletter
 \def\thickhrulefill{\leavevmode \leaders \hrule height 1pt\hfill \kern \z@}
 \def\textoA#1{\def\@textoA{#1}}
 \def\textoB#1{\def\@textoB{#1}}
 \def\maketitle{%
-  \null
-  \thispagestyle{empty}%
-  {\large \raggedleft \@textoA\par}
-  \vfill
-  \begin{center}\leavevmode
-    \normalfont
-    {\LARGE\raggedleft \@author\par}%
-    \thickhrulefill\par
-    {\huge\raggedright \@title\par}%
-    \vskip 1cm
-  \end{center}%
-  \vfill
-  {\large \@textoB\par}
-  \null
-
-\clearpage
-  }
+	\null
+	\thispagestyle{empty}%
+	{\large \raggedleft \@textoA\par}
+	\vfill
+	\begin{center}\leavevmode
+	\normalfont
+	{\LARGE\raggedleft \@author\par}%
+	\thickhrulefill\par
+	{\huge\raggedright \@title\par}%
+	\vskip 1cm
+	\end{center}%
+	\vfill
+	{\large \@textoB\par}
+	\null
+	
+	\clearpage
+}
 \makeatother
 \textoA {Jose L. Muñoz\\
-Juanjo Alins \\ Jorge Mata \\ Oscar Esparza}
+	Juanjo Alins \\ Jorge Mata \\ Oscar Esparza}
 \textoB {}
 \author{UPC Telematics Department}
 \title{Linux Networks}
@@ -286,7 +483,7 @@ Juanjo Alins \\ Jorge Mata \\ Oscar Esparza}
 % \EXTRAEXTRAtrue
 \SOLStrue
 
-    
+
 \begin{document}
 \maketitle
 \pagestyle{empty}

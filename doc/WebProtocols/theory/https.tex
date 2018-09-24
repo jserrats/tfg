@@ -87,10 +87,30 @@ The mechanism is used to protect the connection from \textbf{downgrade attacks}.
 If HSTS was enabled in this scenario, the browser would refuse to connect to the proxy as the connection was plain http. 
 
 
-\paragraph{Server Name Indication (SNI)}
-Since IP addresses are scarce, it is not unusual to host several websites under the same IP. If we are working with HTTP in this IP we have usually have a reverse proxy, that reads the \textbf{Host} field of the request that indicates the domain of the website we are connecting to, and forwards the request to the correct web server. This works well in HTTP, but what about HTTPS?. In HTTPS when the client initiates a TLS connection, the server does not know which server the client is connecting to, and therefore the server does not know which digital certificate send (assuming the different sites have different digital certificates). If the server sends the wrong certificate, the client browser won't trust the server, as the certificate won't match the request.
+\subsection{Server Name Indication (SNI)}
+Since IP addresses are scarce, it is not unusual to host several websites under the same IP. If this  web hosting service works with HTTP we have usually have a reverse proxy, that reads the \textbf{Host} field of the request that indicates the domain of the website we are connecting to, and forwards the request to the correct web server. This works well in HTTP, but what about HTTPS?. In HTTPS when the client initiates a TLS connection, the server does not know which website the client is connecting to, and therefore the server does not know which digital certificate send (assuming the different sites have different digital certificates). If the server sends the wrong certificate, the client browser won't trust the server, as the certificate won't match the request.
 
-SNI fixes this problem by sending the domain name as part of the TLS negotiation. This way, the server knows which certificate send and the the TLS handshake works as usual. It is important to known that the domain name is sent unencrypted, so third parties can know which domain the client is connecting to.
+SNI fixes this problem by sending the domain name in clear as part of the TLS negotiation. This way, the server knows which certificate send and the the TLS handshake works as usual. It is important to known that the domain name is sent unencrypted, so third parties can know which domain the client is connecting to.
 
-\paragraph{Mixed content}
-%TODO ...
+\subsection{Mixed content}
+Even if a page is served using HTTPS, the page can contain assets (an image, for example) that are requested to other servers that use HTTP. This situation is called \textbf{Mixed content} and is important to understand how it may affect privacy and security. 
+
+\subsubsection{Mixed passive content}
+Mixed passive content is the content that is served over HTTP on a HTTPS page, but that cannot modify the whole page. For example, if an image was served via HTTP and a malicious agent would modify it , it would only display on the original image space. It can still be malicious as it can contain a misleading message that can cause the user to do a dangerous action.
+
+\subsubsection{Mixed active content}
+A resource is classified as active if it is able to modify the Document Object Model of the page. This can be a serious threat, as an attacker could completely modify the aspect and function of a page, enabling him to steal cookies, credentials and private information. The following are considered as active content:
+
+\begin{itemize}
+\item scripts
+\item href atribute
+\item iframes
+\item XMLHTTPRequests
+\end{itemize}
+
+Most browser block the mixed active content, while they allow mixed passive content.
+
+\subsubsection{Safe resources over HTTP}
+If the main page is served over HTTP, but the assets are loaded from sites with HTTPS, these assets are not completely safe. A malicious agent could intercept the main page easily and then modify the URL where these assets are requested, and load malicious ones. This is a common mistake done for example in HTTPS iframes. For example, a HTTP site needs a secure form (login, payment or similar) and the developer inserts an iframe that loads a HTTPS site with the secured functionality. This form is not secure, since the main page can be modified by an attacker and change where the iframe requests the content. Since the browser does not show which URL the iframe is pointing, this attack can be completely silent.
+
+

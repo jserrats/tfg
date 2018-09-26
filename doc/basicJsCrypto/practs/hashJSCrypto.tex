@@ -8,13 +8,14 @@ In this exercise you will practice with cryptographic hashes.
 
 \begin{enumerate}[1.]
 \item Write a script that prints the hash of a string using SHA265. 
-Use the \textit{crypto} module of the Node standard library.
+Use the \textit{crypto} module of the Node standard library \url{https://nodejs.org/api/crypto.html#crypto_class_hash}.
+
 \item Modify the script so that it also prints 
-the hash of a slightly different string. 
+the hash of a slightly different string.
 \item Compare the two results. 
 Do you think it's easy to find a collision? 
 How many possible hash digests are there in SHA256?
-	
+
 \end{enumerate}
 \end{Exercise}
 
@@ -37,7 +38,7 @@ print_hash("Bob owes me 100$");
 print_hash("Bob owes me 900$");
 
 console.log("\nThere are " + Math.pow(2, 256) 
-+ " possible sha256 outputs. Collisions are possible but very unlikely");
++ " possible sha256 outputs. Collisions are almost impossible");
 \end{js}
 \end{enumerate}
 \end{Answer}
@@ -52,9 +53,11 @@ console.log("\nThere are " + Math.pow(2, 256)
 In this exercise you will practice with the bcrypt algorithm for hashing passwords.
 
 \begin{enumerate}[1.]
-\item Write a script that asks the user for a password, stores it in memory as a bcrypt, and then asks again for the password. The script has to compare both bcrypts and login the user. Use the \textit{bcrypt} library for Node.
+\item Write a script that asks the user for a password, stores it in memory as a bcrypt, and then asks again for the password. The script has to compare both bcrypts and login the user. Use the \textit{bcrypt} library for Node \url{https://www.npmjs.com/package/bcrypt}.
 
 \begin{js}
+// since this is for demo purposes, you can use any number of rounds you want
+
 bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
 // Store hash in your password DB.
 });
@@ -70,6 +73,12 @@ bcrypt.compare(someOtherPlaintextPassword, hash, function(err, res) {
 
 Use this snippet for making easy password prompts:
 \begin{js}
+  
+const readline = require('readline')
+
+rl = readline.createInterface(process.stdin, process.stdout);
+  
+// this function asks the user for a input in the terminal.
 function ask_something(to_ask) {
   return new Promise((resolve) => {
     rl.question(to_ask, (answer) => {
@@ -80,6 +89,12 @@ function ask_something(to_ask) {
 
 async function main() {
   const password = await ask_something('Write a password to be saved: ');
+  
+  \*
+  
+  YOUR CODE HERE
+  
+  *\
 }
 \end{js}
 \end{enumerate}
@@ -105,13 +120,17 @@ function ask_something(to_ask) {
 }
 
 async function main() {
+    
+    // we prompt the user for a password
+    password = await ask_something('Write a password to be saved: ');
 
-    const password = await ask_something('Write a password to be saved: ');
-
+    // we calculate the bcrypt of the password and store it. We delete the password, as they should not be stored anywhere
     bcrypt.hash(password, 10, function (err, hash) {
         stored_hash = hash;
+        password = '';
     });
-
+    
+    // we ask for a new password
     const new_password = await ask_something('Now write the password to login: ');
 
     console.log("The bcrypt stored is: " + stored_hash);
@@ -124,6 +143,8 @@ async function main() {
             console.log("The passwords are diferent")
         }
     });
+  
+    // this is needed to close the program properly
     rl.close();
     process.stdin.destroy();
 }

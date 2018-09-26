@@ -12,64 +12,84 @@ Before going deeper in this methods, it's important to know the factors that aff
 	\item \textbf{Back-end/Front-end:} Most XSS protections are done in the back-end, but it's important to remember that DOM-based XSS happens exclusively in the front-end.
 \end{itemize}
 
-\subsubsection{Input handling contexts}
-In every web application there are many places where malicious js can be inserted. It's important to know how each context works, as the attacker wants to find a way of breaking it.
-
 \begin{table}[]
-	\centering
-	\caption{Input contexts in a web application}
-	\label{my-label}
-	\begin{tabular}{|l|l|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Context}} & \multicolumn{1}{c|}{\textbf{Example code}}                         \\ \hline
-		HTML element content                   & \textless{}div\textgreater{}userInput\textless{}/div\textgreater{} \\ \hline
-		HTML attribute value                   & \textless{}input value="userInput"\textgreater{}                   \\ \hline
-		URL query value                        & http://example.com/?parameter=userInput                            \\ \hline
-		CSS value                              & color: userInput                                                   \\ \hline
-		JavaScript value                       & var name = "userInput";                                            \\ \hline
-	\end{tabular}
+  \centering
+  \caption{Input contexts in a web application}
+  \label{input-context}
+  \begin{tabular}{|l|l|}
+    \hline
+    \multicolumn{1}{|c|}{\textbf{Context}} & \multicolumn{1}{c|}{\textbf{Example code}}                         \\ \hline
+    HTML element content                   & \textless{}div\textgreater{}userInput\textless{}/div\textgreater{} \\ \hline
+    HTML attribute value                   & \textless{}input value="userInput"\textgreater{}                   \\ \hline
+    URL query value                        & http://example.com/?parameter=userInput                            \\ \hline
+    CSS value                              & color: userInput                                                   \\ \hline
+    JavaScript value                       & var name = "userInput";                                            \\ \hline
+  \end{tabular}
 \end{table}
 
-For example, if we had a HTML element input  and we want to break context, we could insert something like 
+\subsubsection{Input handling contexts}
+In every web application there are many places where malicious js can be inserted. In the table \ref{input-context} we can see the most common places where a user input can be inserted in the HTML. It's important to know how each context works, as the attacker wants to find a way of breaking it. We are going to explain how we would break context for the first two cases, \textbf{HTML element content} and \textbf{HTML attribute value}.
+
+\paragraph{HTML element content}
+In this case the input would probably be a value entered by the user stored in the back-end (Stored/Persistent XSS). The code will insert the value in the HTML inside a div tag in order to display it. Breaking context is as easy as closing the div tag before the content we want to insert. If a div tag looks like this:
+\begin{html}
+  <div> content </div>
+\end{html}
+And we insert the following payload inside the div
 \begin{html}
 </div><script> maliciousJS() </script><div> 
 \end{html}
-so the resulting HTML would be valid 
+This would be the resulting HTML inserted
 \begin{html}
 <div></div><script> maliciousJS() </script><div></div>
 \end{html}
-The closing division tag lets us insert whatever we want inside, so the obvious thing to do in order to protect the input would be to ban them. In another case 
+By closing the div tag, we can insert our own script with whatever content we want and still get a valid HTML document.
+
+\paragraph{HTML attribute value}
+In this case we want to attack the value attribute of a web form that looks like this
 \begin{html}<input value="userInput">\end{html}
-that would not work because the browser will parse everything that gets between quotes as a text. In this case, the approach to attacking is closing the value field, and then insert the payload
-\begin{html}"><script>...</script><input value="\end{html}
-It's important to know in which context we are so it is correctly protected.
+The correct approach to attacking is closing the value field, and then insert the payload
+\begin{html}"><script> maliciousJS() </script><input value="\end{html}
+The result would be:
+\begin{html}
+  <input value=""><script> maliciousJS() </script><input value="">
+\end{html}
+Effectively breaking the context and inserting a malicious payload.
 
 \subsubsection{Inbound/Outbound}
-The input sanitation can be done when the data arrives at the application, or when it is sent to the browser. As we've seen, depending on the input context the validation and/or encoding has to be done differently. When the input arrives at the application we don't know in which context is going to be inserted, so protections can't be applied efficiently.
+The input sanitation can be done when the data arrives at the application, or when it is sent to the browser. As we've seen, depending on the input context the validation and/or encoding has to be done differently. When the input arrives at the application we don't know in which context is going to be inserted, so protections can't be applied efficiently. That is why inbound input handling should only be used as an extra layer of protection, and the main effort should be centered around outbound validation, adapted to the context of the content.
 
 \subsubsection{Encoding}
 Encoding consists of escaping the input received so the browser does not interpret it as code to be executed. In a HTML environment typically we will encode the characters \textbf{<, >} into \textbf{\&lt; and \&gt;}. If we tried to insert a code like \begin{html}<script> ... </script>\end{html} it would become \begin{html}&lt;script&gt;...&lt;/script&gt;\end{html} thus rendering it inoffensive. When the browser finds this translates the encoded characters and then displays them, but without executing it.
 
 Encoding can be done on the back-end by using the methods of the chosen programming language. In the front-end we will be using js and it's built-in methods to encode properly in each context.
 
+
+
+However, encoding is not perfect. Sometimes we may want to allow some html in the user input (a forum where the users can apply format to the posts for example) and if we encode everything, it would be displayed as plain text and wouldn't work. Also sometimes encoding can't protect the application from other attacks, like inserting a valid URL beginning in "javascript:" + javascript function. This is a valid URL that tells the browser that the following has to be interpreted using js. You can type \url{javascript:alert()} in the browser navigation bar and see how the alert pops up. It can also be used in a similar way of typical hyperlink.
+
+\begin{html}
+  <a href="javascript:alert()"> Click me to trigger an alert </a>
+\end{html}
+
+As you can see, this is a clear attack vector to insert malicious js.
+
 \begin{table}[]
-	\centering
-	\caption{Input validation on different contexts}
-	\label{my-label}
-	\begin{tabular}{|l|l|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Context}} & \multicolumn{1}{c|}{\textbf{Method}}                           \\ \hline
-		HTML element content                   & node.textContent = userInput 									\\ \hline
-		HTML attribute value                   & element.setAttribute(attribute, userInput)                   	\\ \hline
-		URL query value                        & window.encodeURIComponent(userInput)                           \\ \hline
-		CSS value                              & element.style.property = userInput                             \\ \hline
-	\end{tabular}
+  \centering
+  \caption{Input validation on different contexts}
+  \label{input-validation}
+  \begin{tabular}{|l|l|}
+    \hline
+    \multicolumn{1}{|c|}{\textbf{Context}} & \multicolumn{1}{c|}{\textbf{Method}}                           \\ \hline
+    HTML element content                   & node.textContent = userInput 									\\ \hline
+    HTML attribute value                   & element.setAttribute(attribute, userInput)                   	\\ \hline
+    URL query value                        & window.encodeURIComponent(userInput)                           \\ \hline
+    CSS value                              & element.style.property = userInput                             \\ \hline
+  \end{tabular}
 \end{table}
 
-However, encoding is not perfect. Sometimes we may want to allow some html in the user input (a forum where the users can apply format to the posts for example) and if we encode everything, it would be displayed as plain text and wouldn't work. Also sometimes encoding can't protect the application from other attacks, like inserting a valid URL beginning in "javascript:" + javascript function. This is a valid URL that tells the browser that the following has to be interpreted using js. As you can see, this is a attack vector to insert malicious js, but because we don't use html tags, the encoding can't protect it.
-
 \subsubsection{Validation}
-Validation consists in removing the malicious parts of a user input. If we are validating an input that has some html tags, we can allow those that are inoffensive like\textbf{ <p>}, but filtering others like \textbf{<script>}.
+Validation consists in removing the malicious parts of a user input. If we are validating an input that has some html tags, we can allow those that are inoffensive like \textbf{<p>}, but filtering others like \textbf{<script>}. 
 
 When it comes to classification of the input, it is recommended to apply a whitelist approach. White listing consists of having a list of allowed patterns, and everything else that is not found in the white list gets flagged as malicious. This is much more secure than blacklisting, because there are many variations of a simple exploit and we should blacklist all of them to be safe. Also, as technologies evolve, our blacklist may be outdated every time a new version of HTML or js is released. 
 
@@ -80,3 +100,5 @@ When a user input has been analyzed, we have two different approaches.
 
 \item Sanitation: Only the invalid parts of the input are removed. For example if we have a HTML formatted text, the allowed tags such as <h1>, <p>, etc ...  remain, but the tag <script> and all its contents are removed.
 \end{itemize}
+
+In table \ref{input-validation} we can find several js built-in methods that allow us to modify the HTML safely. Keep in mind that this methods are only for the front-end, as each back-end will have different methods depending on the language and libraries chosen.

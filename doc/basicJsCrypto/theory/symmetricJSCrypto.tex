@@ -44,23 +44,7 @@ encrypted += cipher.final('hex');
 console.log(encrypted);
 \end{js}
 
-
-\begin{html}
-	<!DOCTYPE html>
-	<html lang="en">
-	<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Document</title>
-	</head>
-	<body>
-	
-	</body>
-	</html>
-\end{html}	
-
-The second implementation uses the node \textbf{Streams}. Streams are objects that can be read and written to. If we use the cipher as a stream, we can write the clear data to it, and then read the encrypted data. The key of streams is that they can be piped to each other, thus making the write method direct automatically to the input of another stream. This way we can input the data to be ciphered indefinitely until closed.
+The second implementation uses NodeJS \textbf{Streams}. Streams are objects that can be read and written to. If we use the cipher as a stream, we can write the clear data to it, and then read the encrypted data. What makes streams very useful is that they can be piped to each other, thus making the write method redirect automatically to the input of another stream. This way we can input the data to be ciphered indefinitely until closed.
 
 \begin{js}
 const crypto = require('crypto');

@@ -26,7 +26,7 @@ Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT;
 \end{lstlisting}
 
 \subsection{Secure and HttpOnly cookies}
-The Secure flag indicates the browser that it should only send the cookie over HTTPS, never HTTP. The HttpOnly flag makes the cookie inaccessible to JS using Document.cookie. This is done to prevent XSS attacks
+The Secure flag indicates the browser that it should only send the cookie over HTTPS, never HTTP. The HttpOnly flag makes the cookie inaccessible to JS using Document.cookie. This is done to prevent XSS attacks as explained in Section \ref{sec:xss}
 \begin{lstlisting}[style=verbs]
 Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT; Secure; HttpOnly
 \end{lstlisting}

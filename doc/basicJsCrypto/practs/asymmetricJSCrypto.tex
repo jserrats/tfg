@@ -15,21 +15,29 @@ When finished, we will have two files,
 one with the public key and the other one with the private.
 
 \begin{enumerate}[1.]
-	
-\item Write a simple script that loads the keys from the files 
-and encrypts and decrypts a string using RSA using 
-the library \textit{node-rsa.}
+
+\item Write a simple script that loads the keys from the files we have generated earlier and encrypts and decrypts a string using RSA using the library \textbf{node-rsa.}
 Use the following snippets as a guide:
 \begin{js}
+// load the contents of a file into node as string
 file_content = fs.readFileSync('file.txt');
+
+// create a RSA key object from a string that contains the key in PEM format.
 private_key = new NodeRSA(" PEM formatted key ");
+
+// use this method of the key object to encrypt data
 encrypted_data = public_key.encrypt(data, 'base64');
+
+// use this method of the key object to decrypt data
 private_key.decrypt(data, 'utf8');
 \end{js}
 \item Now use the signing capability of RSA. Use the sign and verify methods:
 \begin{js}
-key.sign(buffer, [encoding], [source_encoding]);
-key.verify(buffer, signature, [source_encoding], [signature_encoding])
+// use this method of the key object to generate the signature of this string
+signature = private_key.sign("this is the data", 'base64');
+
+// use this method of the key object to verify this signature is valid. The original data and the signature are required.
+public_key.verify("this is the data", signature, 'utf8', 'base64')
 \end{js}
 	
 \end{enumerate}
@@ -40,22 +48,30 @@ key.verify(buffer, signature, [source_encoding], [signature_encoding])
 \item The code is the following: 
 
 \begin{js}
-// openssl genrsa -out certs/server/my-server.key.pem 2048
-// openssl rsa -in certs/source/my-source.key.pem -pubout -out certs/destination/my-source.pub
+// import the needed libraries
 var fs = require('fs');
 const NodeRSA = require('node-rsa');
 
+
+// load the keys genereated from the files
 private_key = new NodeRSA(fs.readFileSync('key.priv'));
 public_key = new NodeRSA(fs.readFileSync('key.pub'));
 
+//data to encrypt
+data = "testing asymmetric encryption";
 
-data = "testaedaedaedae";
+// encryption and decryption test
+encrypted_data = public_key.encrypt(data, 'base64');
+console.log('Encrypted data: ' + encrypted_data);
+console.log('Decrypted data: ' + private_key.decrypt(encrypted_data, 'utf8'));
 
-console.log(private_key.decrypt(public_key.encrypt(data, 'base64'), 'utf8'));
-
+// signing a file test
 signed = private_key.sign(data, 'base64');
 
-console.log(public_key.verify(data, signed, 'utf8', 'base64'));
+if (public_key.verify(data, signed, 'utf8', 'base64')){
+  console.log('The data was signed with our key');
+}
+
 \end{js}
 \end{enumerate}
 \end{Answer}

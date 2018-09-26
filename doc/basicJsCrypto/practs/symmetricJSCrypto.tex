@@ -7,8 +7,11 @@
 In this exercise you will practice with symmetric encryption.
 
 \begin{enumerate}[1.]
-\item Write a simple script that encrypts and decrypts a string using ECB.
-In your script, prints to the screen the whole process. 
+\item Write a simple script that encrypts and decrypts a string using ECB and the first implementation explained (fixed length).
+Print the process to the screen using the print function in NodeJS.
+\begin{js}
+  console.log("string to print")
+\end{js}
 The password and the string to be encrypted can be hard coded.
 \end{enumerate}
 
@@ -21,7 +24,6 @@ The password and the string to be encrypted can be hard coded.
 \begin{js}
 var crypto = require('crypto');
 password = 'asdfe';
-
 
 function encrypt(text) {
     var cipher = crypto.createCipher('aes-256-ecb', password);
@@ -40,11 +42,9 @@ function decrypt(text) {
 
 message = "01234567890123456789012345678901234567890123456";
 var hw = encrypt(message);
-split = hw.toString().length / 2;
-console.log("Message is " + message.length + " bytes long. " +
-    "Encrypted is " + hw.toString().length + " chars or " + hw.length /2 + "bytes");
-console.log(hw, "\n" + hw.substr(0, split), "\n" + hw.substr(split));
-console.log(decrypt(hw));
+console.log('Original message: ' + message);
+console.log('Encrypted message: ' + hw.toString());
+console.log('Decrypted message: ' + decrypt(hw));
 \end{js}
 
 \end{enumerate}

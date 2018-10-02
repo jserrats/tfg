@@ -14,7 +14,6 @@ In this exercise we are implementing all we've seen until now. We are going to i
 This software is going to have three parts: client, server and authenticator. The authenticator can be recycled from the previous exercise. 
 \begin{enumerate}
 	\item First of all design the key exchange. The server should be listening for connections, and on connection send it's public key to the client. The client saves this key, and sends the symmetric key that is going to be used, encrypted with the server's public key, so eavesdropper's can't see it. From this point, both parties have the symmetric key, and all data exchange is gonna be encrypted with this key.
-	
 	\item Once the private connection is established, develop a login system. The easiest way is to achieve this is to make the client prompt the user with the user, password and authenticator token. Then the client serializes the answer in a JSON object, sends it to the server, and the server deserializes and reads the information. Server must generate a pseudo - DB at startup with a entry for every user that contains their password stored with a bcrypt hash and the seed for the user's authenticator. Beware that AES won't send the JSON unless it's larger than the block size, so to be sure we'll add a padding consistent of empty spaces.
 	\begin{js}
 	cipher.write(serialized + " ".repeat(128 - serialized.length));
@@ -98,7 +97,6 @@ proxy.once('data', async function (proxy_public_key) {
 
 
 \begin{js}
-//cors-server.js
 const net = require('net');
 const crypto = require('crypto');
 const NodeRSA = require('node-rsa');

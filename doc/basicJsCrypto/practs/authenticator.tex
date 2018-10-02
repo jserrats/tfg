@@ -1,59 +1,96 @@
 \section{Authenticator}
 A authenticator is a software that generates a token that is used with a password when logging in. One possible implementation is generated the token with a seed that is set when created, and a time variable. When we need a token, we concatenate the seed with the timestamp, and then hash it. The first N chars of the hash result are the authenticator token. The server knows the seed, and can generate the same token using the same process. The server is sure that only somebody that knows the seed can generate a valid token.
 
-\subsection{Exercises}
+\begin{Exercise}[label={authenticator}]
 \begin{enumerate}
-\item Write a little program that every second in the UNIX time that ends with 0 prints the token with a given seed. You can use the \textbf{setInterval()} function. Use a SHA256 like in the hash exercise. You can get the UNIX time the following way:
+\item Write a little program that every second in the UNIX time that ends with 0 prints the token with a given seed. Use a SHA256 like in the hash exercise. Use the following code pieces to help you
 \begin{js}
+// this function returns the UNIX timestamp every time it is called
 timestamp = Math.round((new Date()).getTime() / 1000);
 \end{js}
-\item Write a program that has a bare socket server. If the server receives a valid token, responds "ok!" 
-\end{enumerate}
 
 \begin{js}
-//authenticator.js
-const crypto = require('crypto');
+// this calls the testFunction every 1000 miliseconds
+setInterval(testFunction, 1000);
+\end{js}
 
-function print_auth() {
-    let timestamp = Math.round((new Date()).getTime() / 1000);
-    if ((timestamp % 30) === 0) {
+\item Write a program that has a TCP socket server. If the server receives a valid token in ASCII, responds "ok!". Look the following example to understand how to create a TCP server socket in NodeJS
+
+\begin{js}
+// import the required library
+var net = require('net');
+
+net.createServer(function(sock) {
+  //this is called when someone connects to the server
+  console.log('connection' + sock.remoteAddress +':'+ sock.remotePort);
+  
+  // this is called when the socket recieves data.
+  sock.on('data', function(data) {
+    console.log('incoming data ' + sock.remoteAddress + ': ' + data);
+    
+    // we answer to the client
+    sock.write('You said "' + data + '"');
+  });
+  
+  // this is called when the client closes the connection
+  sock.on('close', function(data) {
+    console.log('closed ' + sock.remoteAddress +' '+ sock.remotePort);
+  });
+
+// we tell the socket object to listen port 1234
+}).listen(1234);
+\end{js}
+
+\end{enumerate}
+\end{Exercise}
+
+\begin{Answer}[ref={authenticator}]
+  
+  \begin{js}
+    //authenticator.js
+    const crypto = require('crypto');
+    
+    function print_auth() {
+      let timestamp = Math.round((new Date()).getTime() / 1000);
+      if ((timestamp \% 30) === 0) {
         let auth = crypto.createHash('sha256').update(timestamp + seed).digest('hex').substr(0, 6);
         console.log(auth);
+      }
     }
-}
-
-seed = "prova";
-setInterval(print_auth, 1000);
-\end{js}
-
-
-\begin{js}
-// authenticator\_server.js
-const net = require('net');
-const crypto = require('crypto');
-
-last_timestamp = 0;
-seed = "prova";
-
-net.createServer(function (sock) {
-    console.log('New destination');
-    sock.on('data', function (data) {
+    
+    seed = "prova";
+    setInterval(print_auth, 1000);
+  \end{js}
+  
+  
+  \begin{js}
+    // authenticator\_server.js
+    const net = require('net');
+    const crypto = require('crypto');
+    
+    last_timestamp = 0;
+    seed = "prova";
+    
+    net.createServer(function (sock) {
+      console.log('New destination');
+      sock.on('data', function (data) {
         data = data.toString().substr(0, data.length - 1);
         if (crypto.createHash('sha256').update(last_timestamp + seed).digest('hex').substr(0, 6) === data) {
-            sock.write('Authentication correct!\n');
+          sock.write('Authentication correct!\n');
         }
         else {
-            sock.write('Wrong!\n');
+          sock.write('Wrong!\n');
         }
-    });
-    sock.on('close', function (data) {
+      });
+      sock.on('close', function (data) {
         console.log('CLOSED: ' + sock.remoteAddress + ' ' + sock.remotePort);
-    });
-}).listen(1234);
-setInterval(function () {
-    let timestamp = Math.round((new Date()).getTime() / 1000);
-    if ((timestamp \% 30) === 0) {
+      });
+    }).listen(1234);
+    setInterval(function () {
+      let timestamp = Math.round((new Date()).getTime() / 1000);
+      if ((timestamp \% 30) === 0) {
         last_timestamp = timestamp;
-    }
-}, 1000);
-\end{js}
+      }
+    }, 1000);
+  \end{js}
+\end{Answer}

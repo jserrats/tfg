@@ -36,17 +36,74 @@ $ cat Tux.png | nc localhost 1234
 
 If all goes well, we shall see a picture named test.png, that should be the same as Tux.png
 
-If we capture this traffic with wireshark, then select the option "Follow TCP Stream" on any tcp packet, and finally select "Save as..." we can capture files directly from wireshark. If we do this with the connection that isn't encrypted, we can save the picture, while if we do this in the connection that isn't, we are getting pseudonoise. This is a very powerful tool, as we can see and save any non-encrypted traffic that goes trough our computer (Now imagine you are the gateway in a public wifi).
+If we capture this traffic with wireshark, then select the option "Follow TCP Stream" on any tcp packet, and finally select "Save as..." we can capture files directly from wireshark. If we do this with the connection that isn't encrypted, we can save the picture, while if we do this in the connection that isn't, we are getting pseudonoise. This is a very powerful tool, as we can see and save any non-encrypted traffic that goes trough our computer.
 
-\subsection{Exercises}
+\begin{Exercise}[label={proxy}]
 \begin{enumerate}
-	\item Write the decrypt server. It must receive the data from the socket, pipe it through a AES decipher and then save it to a file.
-	
-	\item Write the proxy server. It should have two different sockets. One that works as a server en receives the data from the netcat, and the other must be a client that connects to the decrypt\_server. The data received from the netcat should be encrypted and then sent to the decrypt server.
+	\item Write the decrypt server. It must receive the data from the socket, pipe it through a AES decipher and then save it to a file. You can find below examples on how to create a TCP server socket and a AES crypto stream decipher
+   
+   \begin{js}
+     // import the required library
+     var net = require('net');
+     
+     net.createServer(function(sock) {
+       //this is called when someone connects to the server
+       console.log('connection' + sock.remoteAddress +':'+ sock.remotePort);
+       
+       // this is called when the socket recieves data.
+       sock.on('data', function(data) {
+         console.log('incoming data ' + sock.remoteAddress + ': ' + data);
+         
+         // we answer to the client
+         sock.write('You said "' + data + '"');
+       });
+       
+       // this is called when the client closes the connection
+       sock.on('close', function(data) {
+         console.log('closed ' + sock.remoteAddress +' '+ sock.remotePort);
+       });
+       
+       // we tell the socket object to listen port 1234
+     }).listen(1234);
+   \end{js}
+ 
+ \begin{js}
+   const crypto = require('crypto');
+   const fs = require('fs');
+   const decipher = crypto.createDecipher('aes192', 'a password');
+   
+   const input = fs.createReadStream('input.txt');
+   const output = fs.createWriteStream('output.txt');
+   
+   input.pipe(decipher).pipe(output);
+ \end{js}
+
+	\item Write the proxy server. It should have two different sockets. One that works as a server en receives the data from the netcat, and the other must be a client that connects to the decrypt\_server. The data received from the netcat should be encrypted and then sent to the decrypt server. The following is an example of a TCP client socket.
+  
+  \begin{js}
+    var net = require('net');
+    
+    var client = new net.Socket();
+    client.connect(1234, 'localhost', function() {
+      console.log('Connected to the server');
+      
+      // sending a message trough the socket
+      client.write('message to the server');
+    });
+    
+    client.on('data', function(data) {
+      console.log('Received: ' + data);
+    });
+    
+    client.on('close', function() {
+      console.log('Connection closed');
+    });
+  \end{js}
 	
 	\item Improve the proxy and the server so full duplex encrypted conection is possible.
 \end{enumerate}
-
+\end{Exercise}
+\begin{Answer}[ref={proxy}]
 \begin{js}
 //crypto proxy.js
 const net = require('net');
@@ -92,3 +149,4 @@ net.createServer(function (sock) {
     });
 }).listen(5678);
 \end{js}
+\end{Answer}

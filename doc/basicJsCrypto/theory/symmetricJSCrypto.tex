@@ -2,9 +2,7 @@
 
 Symmetric key encryption use the same key for both encryption and decryption. It's the most intuitive form of encryption. There are lots of algorithms for symmetric encryption, but the most typical is \textbf{AES (Advanced Encryption Standard).}
 
-AES is a block cipher, which means that it encrypts 128 bits at a time. This means that each number we can have with 128 bits, has a "translation" into the encrypted world, that is 128 bits long too. The key is used to make this translation, and is different for every key used.
-
-If the data we have to encrypt is exatly 128 bits long, this works perfectly, but what happens when data is larger? Then we have to use a \textit{block cipher mode of operation}.
+AES is a block cipher, which means that it encrypts 128 bits at a time. This means that each number we can have with 128 bits, has a "translation" into the encrypted world, that is 128 bits long too. The key is used to make this translation, and is different for every key used. If the data we have to encrypt is exatly 128 bits long, this works perfectly, but what happens when data is larger? Then we have to use a \textit{block cipher mode of operation}.
 
 \subsection{Block cipher mode of operation}
 A mode of operation is an algorithm that explains how to apply a cipher's single-block operation (in this case, AES) to encrypt amounts of data larger than a block. There are many algorithms, but we are only going to explain two of them.

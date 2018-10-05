@@ -94,7 +94,7 @@ app.listen(8000, () => console.log('Listening on 8000'));
 \end{js}
 \subsubsection{DOM based XSS}
 The solution is as easy as changing the .innerHTML method for .textContent. As we have seen the method textContent does input validation.
-\begin{js}
+\begin{html}
 <!DOCTYPE html>
 <html>
 <body>
@@ -114,5 +114,5 @@ The solution is as easy as changing the .innerHTML method for .textContent. As w
 
 </body>
 </html>
-\end{js}
+\end{html}
 \end{Answer}

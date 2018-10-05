@@ -121,7 +121,8 @@ cipher = crypto.createCipher('aes-256-ecb', password);
 
 // we create the server that listens to connections
 source = net.createServer(function (socket) {
-    // the output of the listening socket is piped to the cipher input, and the output of the cipher is sent to the server.
+    // the output of the listening socket is piped to the cipher input,
+    // and the output of the cipher is sent to the server.
     socket.pipe(cipher).pipe(destination);
 }).listen(1234);
 \end{js}

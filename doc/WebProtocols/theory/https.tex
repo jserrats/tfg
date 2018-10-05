@@ -5,9 +5,9 @@ When TLS is used correctly, the connection between a user and a client has
 \begin{itemize}
 	\item \textbf{Privacy} Symmetric cryptography is used by both parties to transmit the data. The keys used are generated every session in a way that even if an eavesdropper has been supervising the  whole conversation cannot obtain said keys.
 	\item \textbf{Authentication} The server can prove their identity using public key cryptography.
-	\item \textbf{Integrity} The connection is considered reliable since every message contains an integrity check that ensures the data has not been modified
+	\item \textbf{Integrity} The connection is considered reliable since every message contains an integrity check that ensures the data has not been modified.
 \end{itemize}
-When connecting to a site that uses https, the URL begins with \textbf{https://} and the default port is \textbf{443} instead of 80
+When connecting to a site that uses https, the URL begins with \textbf{https://} and the default port is \textbf{443} instead of 80.
 
 
 \subsubsection{TLS Handshake}
@@ -19,9 +19,9 @@ Before any data is transmitted, a TLS Handshake is performed. The goal of this h
 
 \item The client sends another random number encrypted with the server's public key (included in the digital certificate). This number is used to generate the symmetric key that will be used during the data exchange.
 
-\item The client sends a finished message, that indicates that the handshake is completed
+\item The client sends a finished message, that indicates that the handshake is completed.
 
-\item The server sends a finished message, that indicates that the handshake is completed
+\item The server sends a finished message, that indicates that the handshake is completed.
 
 \item Data is exchanged and symmetrically encrypted. In this case, the data transmitted under TLS is plain HTTP.
 \end{enumerate}
@@ -52,8 +52,8 @@ A certificate contains the following information:
 	\item Owner's name (in a web context it would be the domain name)
 	\item Owner's public key
 	\item Name of the CA that has issued this certificate
-	\item CA signature of the certificate.
-	\item Valid time.
+	\item CA signature of the certificate
+	\item Valid time
 \end{itemize}
 
 

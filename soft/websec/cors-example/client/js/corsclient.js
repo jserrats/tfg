@@ -550,19 +550,6 @@
         codder.setUrl(serverUrl);
         codder.setMethod(httpMethod);
 
-        var headersMsg = '';
-        var requestHeaders = parseHeaders(controller.getValue('client_headers'));
-        $.each(requestHeaders, function (key, val) {
-            xhr.setRequestHeader(key, val);
-            codder.addHeader(key, val);
-            if (headersMsg.length == 0) {
-                headersMsg = ', with custom headers: ';
-            } else {
-                headersMsg += ', ';
-            }
-            headersMsg += htmlEscape(key);
-        });
-        msg += headersMsg;
 
         xhr.onreadystatechange = function () {
             logger.logEvent('readystatechange');
@@ -600,12 +587,8 @@
 
         logger.log(msg);
 
-        var postData = controller.getValue('client_postdata');
-        if (postData !== '') {
-            xhr.send(postData);
-        } else {
-            xhr.send();
-        }
+
+        xhr.send();
 
     };
 

@@ -90,11 +90,11 @@ function ask_something(to_ask) {
 async function main() {
   const password = await ask_something('Write a password to be saved: ');
   
-  \*
+  /*
   
   YOUR CODE HERE
   
-  *\
+  */
 }
 \end{js}
 \end{enumerate}
@@ -124,7 +124,8 @@ async function main() {
     // we prompt the user for a password
     password = await ask_something('Write a password to be saved: ');
 
-    // we calculate the bcrypt of the password and store it. We delete the password, as they should not be stored anywhere
+    // we calculate the bcrypt of the password and store it.
+    // We delete the password, as they should not be stored anywhere
     bcrypt.hash(password, 10, function (err, hash) {
         stored_hash = hash;
         password = '';

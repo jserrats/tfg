@@ -80,7 +80,16 @@ app.get('/', function (req, res) {
     '<body>' +
     "<h1>The Cat Forum. A place to talk about cats. </h1>" +
     list +
-    "<form action=\"/comment\" method=\"POST\"><div><label>User</label><input type=\"text\" name=\"user\"/></div><div><label>Comment</label><input type=\"text\" name=\"comment\"/></div><div><input type=\"submit\" value=\"Post your comment\" size=\"100\"/></div></form>" +
+    "<form action=\"/comment\" method=\"POST\">
+    <div><label>User</label>
+      <input type=\"text\" name=\"user\"/>
+    </div>
+    <div><label>Comment</label>
+      <input type=\"text\" name=\"comment\"/>
+    </div>
+    <div>
+      <input type=\"submit\" value=\"Post your comment\" size=\"100\"/>
+    </div></form>" +
     '</body>' +
   '</html>')
 });

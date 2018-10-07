@@ -36,7 +36,8 @@ private_key.decrypt(data, 'utf8');
 // use this method of the key object to generate the signature of this string
 signature = private_key.sign("this is the data", 'base64');
 
-// use this method of the key object to verify this signature is valid. The original data and the signature are required.
+// use this method of the key object to verify this signature is valid.
+// The original data and the signature are required.
 public_key.verify("this is the data", signature, 'utf8', 'base64')
 \end{js}
 	

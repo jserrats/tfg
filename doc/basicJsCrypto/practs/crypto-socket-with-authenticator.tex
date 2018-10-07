@@ -29,7 +29,8 @@ const crypto = require('crypto');
 function print_auth() {
     let timestamp = Math.round((new Date()).getTime() / 1000);
     if ((timestamp % 30) === 0) {
-        let auth = crypto.createHash('sha256').update(timestamp + seed).digest('hex').substr(0, 6);
+        let auth = crypto.createHash('sha256')
+        .update(timestamp + seed).digest('hex').substr(0, 6);
         console.log(auth);
     }
 }
@@ -115,8 +116,6 @@ bcrypt.hash(password, 10, function (err, hash) {
     pseudoDB[user] = {hash: hash, auth: authenticator_seed};
     console.log("[*] I've created a entry in the local DB for the user: " + user);
 });
-
-
 const private_key = new NodeRSA("-----BEGIN RSA PRIVATE KEY-----\n" +
     "MIIEpAIBAAKCAQEA5Pj6KM2pClmVUWLc4/N+NdJSf50VI8Ylm6yXl4tNCkZadQbb\n" +
     "PeCKupFStPW9UsVJRSzED2WbaccaGjy/g858mUX6qXlkDGhv5t+UlzrBB6RAsEQh\n" +
@@ -144,7 +143,6 @@ const private_key = new NodeRSA("-----BEGIN RSA PRIVATE KEY-----\n" +
     "GCWkmcQGmr8uwDdgLPUgJWJLJ9qt/042e97PZLILNWyedpmRUiRWb8XQ9IZ5pJlk\n" +
     "i0klI3Xc/cqNdlgd1i7RJMkIl650OhgUCgz7tGhQszVNuSyrav9rZA==\n" +
     "-----END RSA PRIVATE KEY-----\n");
-
 const public_key = "-----BEGIN PUBLIC KEY-----\n" +
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5Pj6KM2pClmVUWLc4/N+\n" +
     "NdJSf50VI8Ylm6yXl4tNCkZadQbbPeCKupFStPW9UsVJRSzED2WbaccaGjy/g858\n" +
@@ -154,7 +152,9 @@ const public_key = "-----BEGIN PUBLIC KEY-----\n" +
     "HVYpITFpWNiz5wiiWtkh4cw6yo9v9jbsO1s2qGSrzaw84Q0O0WUPnyHliugamTV9\n" +
     "FwIDAQAB\n" +
     "-----END PUBLIC KEY-----";
-
+    
+\end{js}
+\begin{js}
 net.createServer(async function (client) {
     client.write(public_key);
     log(client, "I've sent my public RSA key to the client");
@@ -172,10 +172,8 @@ net.createServer(async function (client) {
             const credentials = JSON.parse(data.toString());
             if (await login(credentials, client)) {
                 log(client, "User logged in!");
-
                 decipher.pipe(process.stdout);
                 process.stdin.pipe(cipher);
-
             } else {
                 log(client, "User credentials incorrect");
                 client.destroy();
@@ -211,15 +209,13 @@ async function login(credentials, client) {
         return true;
     }
 }
-
 function check_authenticator(seed, authenticator) {
-    return crypto.createHash('sha256').update(last_timestamp.toString() + seed).digest('hex').substr(0, 6) === authenticator;
+    return crypto.createHash('sha256').update(last_timestamp.toString() + seed)
+    .digest('hex').substr(0, 6) === authenticator;
 }
-
 function log(socket, text) {
     console.log("[+] " + socket.remote + " " + socket.remotePort + " | " + text)
 }
-
 setInterval(function () {
     let timestamp = Math.round((new Date()).getTime() / 1000);
     if ((timestamp % 30) === 0) {
